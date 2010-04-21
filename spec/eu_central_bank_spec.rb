@@ -42,7 +42,7 @@ describe "EuCentralBank" do
     EXCHANGE_RATES = YAML.load_file(@yml_cache_path)
     @bank.update_rates(@cache_path)
     EuCentralBank::CURRENCIES.each do |currency|
-      @bank.get_rate("EUR", currency).should == EXCHANGE_RATES["currencies"][currency]
+      @bank.exchange(100, "EUR", currency).should == (EXCHANGE_RATES["currencies"][currency].to_f * 100).floor
     end
   end
 end

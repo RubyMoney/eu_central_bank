@@ -5,12 +5,16 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "eu_central_bank"
-    gem.summary = %Q{TODO: one-line summary of your gem}
-    gem.description = %Q{TODO: longer description of your gem}
+    gem.summary = %Q{Calculates exchange rates based on rates from european central bank. Money gem compatible. }
+    gem.description = %Q{This gem reads exchange rates from the european central bank website. It uses it to calculates exchange rates. It is compatible with the money gem}
     gem.email = "zan@liangzan.net"
     gem.homepage = "http://github.com/liangzan/eu_central_bank"
     gem.authors = ["Wong Liang Zan"]
-    gem.add_development_dependency "rspec", ">= 1.2.9"
+    gem.add_development_dependency "rspec", ">= 1.3.0"
+    gem.add_development_dependency "rr", ">= 0.10.11"
+    gem.add_development_dependency "shoulda", ">= 2.10.3"
+    gem.add_dependency "nokogiri", ">= 1.4.1"
+    gem.add_dependency "money", ">= 2.3.0"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
   Jeweler::GemcutterTasks.new

@@ -23,6 +23,7 @@ Gem::Specification.new do |s|
      "README.rdoc",
      "Rakefile",
      "VERSION",
+     "eu_central_bank.gemspec",
      "lib/eu_central_bank.rb",
      "spec/eu_central_bank_spec.rb",
      "spec/exchange_rates.xml",

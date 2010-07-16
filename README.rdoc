@@ -28,8 +28,11 @@ With the gem, you do not need to manually add exchange rates. Calling update_rat
 
   # exchange 100 CAD to USD
   # API is the same as the money gem
-  eu_bank.exchange(100, "CAD", "USD") # 124
-  Money.us_dollar(100).exchange_to("CAD")  # Money.ca_dollar(124)
+  eu_bank.exchange(100, "CAD", "USD") # Money.new(80, "USD")
+  Money.us_dollar(100).exchange_to("CAD")  # Money.new(124, "CAD")
+
+  # using the new exchange_with method
+  eu_bank.exchange_with(Money.new(100, "CAD"), "USD") # Money.new(80, "USD")
 
 For performance reasons, you may prefer to read from a file instead. Furthermore, ECB publishes their rates daily. It makes sense to save the rates in a file to read from.
 
@@ -40,7 +43,11 @@ For performance reasons, you may prefer to read from a file instead. Furthermore
   eu_bank.update_rates("/some/file/location/exchange_rates.xml")
 
   # exchange 100 CAD to USD as usual
-  eu_bank.exchange(100, "CAD", "USD") # 124
+  eu_bank.exchange_with(Money.new(100, "CAD"), "USD") # Money.new(80, "USD")
+
+== Deprecation
+
+Note that the *exchange* method will be deprecated in Money version 3.2.0. eu_central_bank will follow suite and deprecate the method in version 0.2.0
 
 == Note on Patches/Pull Requests
  

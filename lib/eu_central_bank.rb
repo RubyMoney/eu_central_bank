@@ -28,13 +28,18 @@ class EuCentralBank < Money::VariableExchangeBank
   end
 
   def exchange(cents, from_currency, to_currency)
-    rate = get_rate(from_currency, to_currency)
-    if !rate
-      from_base_rate = get_rate("EUR", from_currency)
+    warn '[DEPRECIATION] `exchange` will be removed in money v3.2.0 and eu_central_bank v0.2.0, use #exchange_with instead'
+    exchange_with(Money.new(cents, from_currency), to_currency)
+  end
+
+  def exchange_with(from, to_currency)
+    rate = get_rate(from.currency, to_currency)
+    unless rate
+      from_base_rate = get_rate("EUR", from.currency)
       to_base_rate = get_rate("EUR", to_currency)
       rate = to_base_rate / from_base_rate
     end
-    (cents * rate).floor
+    Money.new((from.cents * rate).floor, to_currency)
   end
 
   protected

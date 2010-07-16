@@ -1,4 +1,5 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
+require 'yaml'
 
 describe "EuCentralBank" do
   before(:each) do
@@ -38,11 +39,19 @@ describe "EuCentralBank" do
     end
   end
 
-  it "should return the correct exchange rates" do
+  it "should return the correct exchange rates using exchange" do
     EXCHANGE_RATES = YAML.load_file(@yml_cache_path)
     @bank.update_rates(@cache_path)
     EuCentralBank::CURRENCIES.each do |currency|
-      @bank.exchange(100, "EUR", currency).should == (EXCHANGE_RATES["currencies"][currency].to_f * 100).floor
+      @bank.exchange(100, "EUR", currency).cents.should == (EXCHANGE_RATES["currencies"][currency].to_f * 100).floor
+    end
+  end
+
+  it "should return the correct exchange rates using exchange_with" do
+    EXCHANGE_RATES = YAML.load_file(@yml_cache_path)
+    @bank.update_rates(@cache_path)
+    EuCentralBank::CURRENCIES.each do |currency|
+      @bank.exchange_with(Money.new(100, "EUR"), currency).cents.should == (EXCHANGE_RATES["currencies"][currency].to_f * 100).floor
     end
   end
 end

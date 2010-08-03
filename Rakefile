@@ -9,7 +9,7 @@ begin
     gem.description = %Q{This gem reads exchange rates from the european central bank website. It uses it to calculates exchange rates. It is compatible with the money gem}
     gem.email = "zan@liangzan.net"
     gem.homepage = "http://github.com/liangzan/eu_central_bank"
-    gem.authors = ["Wong Liang Zan"]
+    gem.authors = ["Wong Liang Zan", "Shane Emmons"]
     gem.add_development_dependency "rspec", ">= 1.3.0"
     gem.add_development_dependency "rr", ">= 0.10.11"
     gem.add_development_dependency "shoulda", ">= 2.10.3"

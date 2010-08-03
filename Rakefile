@@ -14,7 +14,7 @@ begin
     gem.add_development_dependency "rr", ">= 0.10.11"
     gem.add_development_dependency "shoulda", ">= 2.10.3"
     gem.add_dependency "nokogiri", ">= 1.4.1"
-    gem.add_dependency "money", ">= 2.3.0"
+    gem.add_dependency "money", ">= 3.1.0.pre1"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
   Jeweler::GemcutterTasks.new

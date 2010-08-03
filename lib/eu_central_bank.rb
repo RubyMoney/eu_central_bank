@@ -5,7 +5,7 @@ require 'money'
 
 class InvalidCache < StandardError ; end
 
-class EuCentralBank < Money::VariableExchangeBank
+class EuCentralBank < Money::Bank::VariableExchange
 
   ECB_RATES_URL = 'http://www.ecb.int/stats/eurofxref/eurofxref-daily.xml'
   CURRENCIES = %w(USD JPY BGN CZK DKK EEK GBP HUF LTL LVL PLN RON SEK CHF NOK HRK RUB TRY AUD BRL CAD CNY HKD IDR INR KRW MXN MYR NZD PHP SGD THB ZAR)

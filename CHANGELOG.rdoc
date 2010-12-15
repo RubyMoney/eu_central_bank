@@ -1,5 +1,9 @@
 = eu_central_bank changelog
 
+== 0.1.2 (December 15 2010)
+
+* Clean up dependencies
+
 == 0.1.1 (July 17 2010)
 
 * Added the exchange_with method from money gem

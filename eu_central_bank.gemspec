@@ -13,9 +13,9 @@ Gem::Specification.new do |s|
   s.add_dependency "nokogiri", ">= 1.4.1"
   s.add_dependency "money",    "= 3.1.5"
 
-  s.add_development_dependency "rspec",   ">= 1.3.0"
-  s.add_development_dependency "rr",      ">= 0.10.11"
-  s.add_development_dependency "shoulda", ">= 2.10.3"
+  s.add_development_dependency "rspec", ">= 2.0.0"
+  s.add_development_dependency "rr"
+  s.add_development_dependency "shoulda"
 
   s.files         = Dir.glob("lib/**/*") + %w(CHANGELOG.rdoc LICENSE README.rdoc)
   s.require_paths = "lib"

@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = ">= 1.3.6"
 
   s.add_dependency "nokogiri", ">= 1.4.1"
-  s.add_dependency "money",    ">= 3.1.0.pre1"
+  s.add_dependency "money",    "= 3.1.5"
 
   s.add_development_dependency "rspec",   ">= 1.3.0"
   s.add_development_dependency "rr",      ">= 0.10.11"

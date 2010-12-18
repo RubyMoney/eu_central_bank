@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'open-uri'
 require 'nokogiri'
-gem 'money', '=3.1.5'
+gem 'money', '=3.5.4'
 require 'money'
 
 class InvalidCache < StandardError ; end
@@ -29,7 +29,6 @@ class EuCentralBank < Money::Bank::VariableExchange
   end
 
   def exchange(cents, from_currency, to_currency)
-    warn '[DEPRECIATION] `exchange` will be removed in money v3.2.0 and eu_central_bank v0.2.0, use #exchange_with instead'
     exchange_with(Money.new(cents, from_currency), to_currency)
   end
 

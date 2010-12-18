@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = "eu_central_bank"
-  s.version     = "0.1.3"
+  s.version     = "0.1.4"
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Wong Liang Zan", "Shane Emmons"]
   s.email       = ["zan@liangzan.net"]
@@ -18,6 +18,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency "shoulda"
 
   s.files         = Dir.glob("lib/**/*") + %w(CHANGELOG.rdoc LICENSE README.rdoc)
-  s.require_paths = ["lib"]
+  s.require_path = "lib"
 end
 

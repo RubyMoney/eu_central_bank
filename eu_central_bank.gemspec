@@ -18,6 +18,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency "shoulda"
 
   s.files         = Dir.glob("lib/**/*") + %w(CHANGELOG.rdoc LICENSE README.rdoc)
-  s.require_paths = "lib"
+  s.require_paths = ["lib"]
 end
 

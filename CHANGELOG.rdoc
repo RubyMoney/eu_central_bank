@@ -1,5 +1,9 @@
 = eu_central_bank changelog
 
+== 0.1.4 (Jan 18 2010)
+
+* Removed the Estonian Kroon from the list of currencies as EU Central Bank does not list it anymore
+
 == 0.1.3 (December 18 2010)
 
 * Fixed the gemspec bug

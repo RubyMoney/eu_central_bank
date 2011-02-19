@@ -39,7 +39,7 @@ class EuCentralBank < Money::Bank::VariableExchange
       to_base_rate = get_rate("EUR", to_currency)
       rate = to_base_rate / from_base_rate
     end
-    Money.new((from.cents * rate).floor, to_currency)
+    Money.new((from.cents * rate).round, to_currency)
   end
 
   protected

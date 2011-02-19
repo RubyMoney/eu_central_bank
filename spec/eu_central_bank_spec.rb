@@ -7,6 +7,7 @@ describe "EuCentralBank" do
     @cache_path = File.expand_path(File.dirname(__FILE__) + '/exchange_rates.xml')
     @yml_cache_path = File.expand_path(File.dirname(__FILE__) + '/exchange_rates.yml')
     @tmp_cache_path = File.expand_path(File.dirname(__FILE__) + '/tmp/exchange_rates.xml')
+    @exchange_rates = YAML.load_file(@yml_cache_path)
   end
 
   after(:each) do
@@ -40,18 +41,16 @@ describe "EuCentralBank" do
   end
 
   it "should return the correct exchange rates using exchange" do
-    EXCHANGE_RATES = YAML.load_file(@yml_cache_path)
     @bank.update_rates(@cache_path)
     EuCentralBank::CURRENCIES.each do |currency|
-      @bank.exchange(100, "EUR", currency).cents.should == (EXCHANGE_RATES["currencies"][currency].to_f * 100).floor
+      @bank.exchange(100, "EUR", currency).cents.should == (@exchange_rates["currencies"][currency].to_f * 100).round
     end
   end
 
   it "should return the correct exchange rates using exchange_with" do
-    EXCHANGE_RATES = YAML.load_file(@yml_cache_path)
     @bank.update_rates(@cache_path)
     EuCentralBank::CURRENCIES.each do |currency|
-      @bank.exchange_with(Money.new(100, "EUR"), currency).cents.should == (EXCHANGE_RATES["currencies"][currency].to_f * 100).floor
+      @bank.exchange_with(Money.new(100, "EUR"), currency).cents.should == (@exchange_rates["currencies"][currency].to_f * 100).round
     end
   end
 end

@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = "eu_central_bank"
-  s.version     = "0.2.0"
+  s.version     = "0.2.1"
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Wong Liang Zan", "Shane Emmons"]
   s.email       = ["zan@liangzan.net"]
@@ -10,8 +10,8 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = ">= 1.3.6"
 
-  s.add_dependency "nokogiri", ">= 1.4.1"
-  s.add_dependency "money",    ">= 3.5.4"
+  s.add_dependency "nokogiri", "~> 1.4.1"
+  s.add_dependency "money",    "~> 3.7.1"
 
   s.add_development_dependency "rspec", ">= 2.0.0"
   s.add_development_dependency "rr"

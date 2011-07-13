@@ -1,5 +1,9 @@
 = eu_central_bank changelog
 
+== 0.2.1 (Jul 13 2011)
+
+* Updated dependencies to run with Money 3.7.x
+
 == 0.2.0 (Feb 19 2011)
 
 * Changed to use rounding instead of flooring dues to issues with negative number amounts

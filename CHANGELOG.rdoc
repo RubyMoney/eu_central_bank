@@ -1,6 +1,10 @@
 = eu_central_bank changelog
 
-== 0.2.1 (Jul 13 2011)
+== 0.2.2 (Jul 13 2011)
+
+* Fixed #2 versioning bug
+
+== 0.2.1 (Jul 13 2011-yanked)
 
 * Updated dependencies to run with Money 3.7.x
 

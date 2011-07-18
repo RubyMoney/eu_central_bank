@@ -53,4 +53,21 @@ describe "EuCentralBank" do
       @bank.exchange_with(Money.new(100, "EUR"), currency).cents.should == (@exchange_rates["currencies"][currency].to_f * 100).round
     end
   end
+
+  # in response to #4
+  it "should exchange btc" do
+    Money::Currency::TABLE[:btc] = {
+      :priority        => 1,
+      :iso_code        => "BTC",
+      :name            => "Bitcoin",
+      :symbol          => "BTC",
+      :subunit         => "Cent",
+      :subunit_to_unit => 100000000,
+      :separator       => ".",
+      :delimiter       => ","
+    }
+    @bank.add_rate("USD", "BTC", 1 / 13.7603)
+    @bank.add_rate("BTC", "USD", 13.7603)
+    @bank.exchange(100, "BTC", "USD").cents.should == 1376
+  end
 end

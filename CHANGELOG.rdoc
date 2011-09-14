@@ -1,5 +1,9 @@
 = eu_central_bank changelog
 
+== 0.2.4 (Sep 14 2011)
+
+* Merged pull request #6: support currencies without subunits
+
 == 0.2.3 (Sep 8 2011)
 
 * Updated Nokogiri dependency to 1.5.0

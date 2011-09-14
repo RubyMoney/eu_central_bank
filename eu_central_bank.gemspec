@@ -1,12 +1,12 @@
 Gem::Specification.new do |s|
-  s.name        = "eu_central_bank"
-  s.version     = "0.2.3"
-  s.platform    = Gem::Platform::RUBY
-  s.authors     = ["Wong Liang Zan", "Shane Emmons"]
-  s.email       = ["zan@liangzan.net"]
-  s.homepage    = "http://github.com/RubyMoney/eu_central_bank"
-  s.summary     = "Calculates exchange rates based on rates from european central bank. Money gem compatible."
-  s.description = "This gem reads exchange rates from the european central bank website. It uses it to calculates exchange rates. It is compatible with the money gem"
+  s.name         = "eu_central_bank"
+  s.version      = "0.2.4"
+  s.platform     = Gem::Platform::RUBY
+  s.authors      = ["Wong Liang Zan", "Shane Emmons", "Thorsten Böttger"]
+  s.email        = ["zan@liangzan.net"]
+  s.homepage     = "http://github.com/RubyMoney/eu_central_bank"
+  s.summary      = "Calculates exchange rates based on rates from european central bank. Money gem compatible."
+  s.description  = "This gem reads exchange rates from the european central bank website. It uses it to calculates exchange rates. It is compatible with the money gem"
 
   s.required_rubygems_version = ">= 1.3.6"
 

@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name         = "eu_central_bank"
-  s.version      = "0.2.4"
+  s.version      = "0.3.0"
   s.platform     = Gem::Platform::RUBY
   s.authors      = ["Wong Liang Zan", "Shane Emmons", "Thorsten Böttger"]
   s.email        = ["zan@liangzan.net"]

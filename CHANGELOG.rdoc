@@ -1,5 +1,10 @@
 = eu_central_bank changelog
 
+== 0.3.0 (Jan 29 2012)
+
+* Updated Money dependency to 4.0.1
+* Fixed deprecated rake tasks
+
 == 0.2.4 (Sep 14 2011)
 
 * Merged pull request #6: support currencies without subunits

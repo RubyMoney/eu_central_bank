@@ -1,5 +1,7 @@
 = eu_central_bank
 
+{<img src="https://secure.travis-ci.org/RubyMoney/eu_central_bank.png?branch=master" alt="Build Status" />}[http://travis-ci.org/RubyMoney/eu_central_bank]
+
 == Introduction
 
 This gem downloads the exchange rates from the European Central Bank. You can calculate exchange rates with it. It is compatible with the money gem.

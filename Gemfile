@@ -4,6 +4,6 @@ source :rubygems
 
 gemspec
 
-group :development do
+group :test do
   gem "rake"
 end

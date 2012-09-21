@@ -2,6 +2,7 @@ require 'rubygems'
 require 'open-uri'
 require 'nokogiri'
 require 'money'
+require 'redis'
 
 class InvalidCache < StandardError ; end
 
@@ -12,16 +13,21 @@ class EuCentralBank < Money::Bank::VariableExchange
   ECB_RATES_URL = 'http://www.ecb.int/stats/eurofxref/eurofxref-daily.xml'
   CURRENCIES = %w(USD JPY BGN CZK DKK GBP HUF LTL LVL PLN RON SEK CHF NOK HRK RUB TRY AUD BRL CAD CNY HKD IDR INR KRW MXN MYR NZD PHP SGD THB ZAR)
 
-  def update_rates(cache=nil)
-    update_parsed_rates(exchange_rates(cache))
+  def initialize
+    @url = ENV['REDIS_URL'] || "redis://localhost:6379"
+    @redis = Redis.connect(url: @url, thread_safe: true)
+    super
   end
 
-  def save_rates(cache)
-    raise InvalidCache if !cache
-    File.open(cache, "w") do |file|
-      io = open(ECB_RATES_URL) ;
-      io.each_line {|line| file.puts line}
-    end
+  def save_rates
+    raise InvalidCache if !@redis
+    io = open(ECB_RATES_URL) 
+    @redis.set('eu_central_bank', io.read)
+  end
+
+  def load_rates
+    @redis.get('eu_central_bank')
+    update_parsed_rates(exchange_rates(@redis.get('eu_central_bank')))
   end
 
   def update_rates_from_s(content)
@@ -49,8 +55,8 @@ class EuCentralBank < Money::Bank::VariableExchange
   protected
 
   def exchange_rates(cache=nil)
-    rates_source = !!cache ? cache : ECB_RATES_URL
-    doc = Nokogiri::XML(open(rates_source))
+    rates_source = !!cache ? cache : open(ECB_RATES_URL)
+    doc = Nokogiri::XML(rates_source)
     doc.xpath('gesmes:Envelope/xmlns:Cube/xmlns:Cube//xmlns:Cube')
   end
 

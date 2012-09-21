@@ -10,7 +10,6 @@ This gem downloads the exchange rates from the European Central Bank. You can ca
 
  $ gem install eu_central_bank
 
-
 If you want to use your own custom redis you can save redis url in the environment variable "REDIS_URL"
 
 == Dependencies
@@ -29,8 +28,11 @@ With the gem, you do not need to manually add exchange rates. Calling update_rat
   money1.bank # eu_bank
 
   # call this before calculating exchange rates
-  # this will download the rates from ECB
-  eu_bank.update_rates
+  # this will download the rates from ECB and save it to reds
+  eu_bank.save_rates
+  
+  # this will load the rates from redis cache
+  eu_bank.load_rates
 
   # exchange 100 CAD to USD
   # API is the same as the money gem

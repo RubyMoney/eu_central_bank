@@ -2,7 +2,7 @@ Gem::Specification.new do |s|
   s.name         = "eu_central_bank"
   s.version      = "0.3.3"
   s.platform     = Gem::Platform::RUBY
-  s.authors      = ["Wong Liang Zan", "Shane Emmons", "Thorsten Böttger", "Jonathan Eisenstein", "Zack Siri"]
+  s.authors      = ["Wong Liang Zan", "Shane Emmons", "Thorsten Bottger", "Jonathan Eisenstein", "Zack Siri"]
   s.email        = ["zan@liangzan.net"]
   s.homepage     = "http://github.com/artellectual/eu_central_bank"
   s.summary      = "Calculates exchange rates based on rates from european central bank. Money gem compatible."

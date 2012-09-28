@@ -18,8 +18,7 @@ class EuCentralBank < Money::Bank::VariableExchange
   CURRENCIES = %w(USD JPY BGN CZK DKK GBP HUF LTL LVL PLN RON SEK CHF NOK HRK RUB TRY AUD BRL CAD CNY HKD IDR INR KRW MXN MYR NZD PHP SGD THB ZAR)
 
   def redis=(server)
-    url = server
-    @redis = Redis.connect(url: url, thread_safe: true)
+    @redis = Redis.connect(url: server, thread_safe: true)
   end
 
   def redis

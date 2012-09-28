@@ -18,8 +18,11 @@ class EuCentralBank < Money::Bank::VariableExchange
   end
 
   def load_rates(cache=nil)
-    raise InvalidCache if not cache
-    update_parsed_rates(exchange_rates(cache))
+    if cache and not cache.empty?
+      update_parsed_rates(exchange_rates(cache))
+    else 
+      update_parsed_rates(exchange_rates(get_rates.read))
+    end
   end
 
   def update_rates_from_s(content)

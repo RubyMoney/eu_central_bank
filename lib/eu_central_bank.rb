@@ -13,20 +13,24 @@ class EuCentralBank < Money::Bank::VariableExchange
   ECB_RATES_URL = 'http://www.ecb.int/stats/eurofxref/eurofxref-daily.xml'
   CURRENCIES = %w(USD JPY BGN CZK DKK GBP HUF LTL LVL PLN RON SEK CHF NOK HRK RUB TRY AUD BRL CAD CNY HKD IDR INR KRW MXN MYR NZD PHP SGD THB ZAR)
 
-  def initialize
-    @url = ENV['REDIS_URL'] || "redis://localhost:6379"
-    @redis = Redis.connect(url: @url, thread_safe: true)
-    super
+  def redis=(server)
+    url = server || ENV['REDISTOGO_URL'] || ENV['REDIS_URL'] || "redis://localhost:6379"
+    @redis = Redis.connect(url: url, thread_safe: true)
+  end
+
+  def redis
+    return @redis if @redis
+    print "setup redis first via instance.redis = 'redis://url:port' "
   end
 
   def save_rates
-    raise InvalidCache if !@redis
+    raise InvalidCache if not redis
     io = open(ECB_RATES_URL) 
-    @redis.set('eu_central_bank', io.read)
+    redis.set('eu_central_bank', io.read)
   end
 
   def load_rates
-    @redis.get('eu_central_bank')
+    redis.get('eu_central_bank')
     update_parsed_rates(exchange_rates(@redis.get('eu_central_bank')))
   end
 

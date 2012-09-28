@@ -43,7 +43,6 @@ class EuCentralBank < Money::Bank::VariableExchange
       redis.set('eu_central_bank', io.read)
     elsif cache
       File.open(cache, "w") do |file|
-        io = open(ECB_RATES_URL) ;
         io.each_line {|line| file.puts line}
       end
     end

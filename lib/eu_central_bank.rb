@@ -4,11 +4,7 @@ require 'nokogiri'
 require 'money'
 require 'redis'
 
-class InvalidCache < StandardError
-  def message
-    "You must either set the redis url via  or set a cache file location via instance.cache = /path/to/file "
-  end
-end
+class InvalidCache < StandardError ; end
 
 class EuCentralBank < Money::Bank::VariableExchange
 
@@ -17,43 +13,13 @@ class EuCentralBank < Money::Bank::VariableExchange
   ECB_RATES_URL = 'http://www.ecb.int/stats/eurofxref/eurofxref-daily.xml'
   CURRENCIES = %w(USD JPY BGN CZK DKK GBP HUF LTL LVL PLN RON SEK CHF NOK HRK RUB TRY AUD BRL CAD CNY HKD IDR INR KRW MXN MYR NZD PHP SGD THB ZAR)
 
-  def redis=(server)
-    @redis = Redis.connect(url: server, thread_safe: true)
+  def get_rates
+    io = open(ECB_RATES_URL)
   end
 
-  def redis
-    return @redis if @redis
-    print "connect to redis via instance.redis = 'redis://server:port' before calling redis"
-  end
-
-  def cache=(file=nil)
-    @cache = file
-  end
-
-  def cache
-    return @cache if @cache
-    print "define cache file via instance.cache = /path/to/file before calling redis"
-  end
-
-  def save_rates
-    raise InvalidCache if not redis and not cache
-    io = open(ECB_RATES_URL) 
-    if redis
-      redis.set('eu_central_bank', io.read)
-    else cache
-      File.open(cache, "w") do |file|
-        io.each_line {|line| file.puts line}
-      end
-    end
-  end
-
-  def load_rates
-    if redis 
-      redis.get('eu_central_bank')
-      update_parsed_rates(exchange_rates(redis.get('eu_central_bank')))
-    else
-      update_parsed_rates(exchange_rates(cache))
-    end
+  def load_rates(cache=nil)
+    raise InvalidCache if not cache
+    update_parsed_rates(exchange_rates(cache))
   end
 
   def update_rates_from_s(content)

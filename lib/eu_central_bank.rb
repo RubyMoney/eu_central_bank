@@ -6,7 +6,7 @@ require 'redis'
 
 class InvalidCache < StandardError
   def message
-    "You must either set the redis url via instance.redis = 'redis://server:port' or set a cache file location via instance.cache = /path/to/file "
+    "You must either set the redis url via  or set a cache file location via instance.cache = /path/to/file "
   end
 end
 
@@ -23,7 +23,7 @@ class EuCentralBank < Money::Bank::VariableExchange
 
   def redis
     return @redis if @redis
-    raise InvalidCache
+    print "connect to redis via instance.redis = 'redis://server:port' before calling redis"
   end
 
   def cache=(file=nil)
@@ -32,7 +32,7 @@ class EuCentralBank < Money::Bank::VariableExchange
 
   def cache
     return @cache if @cache
-    raise InvalidCache
+    print "define cache file via instance.cache = /path/to/file before calling redis"
   end
 
   def save_rates

@@ -1,19 +1,22 @@
 = eu_central_bank
 
-{<img src="https://secure.travis-ci.org/RubyMoney/eu_central_bank.png?branch=master" alt="Build Status" />}[http://travis-ci.org/RubyMoney/eu_central_bank]
 
 == Introduction
 
 This gem downloads the exchange rates from the European Central Bank. You can calculate exchange rates with it. It is compatible with the money gem.
 
+
 == Installation
 
  $ gem install eu_central_bank
+
+If you want to use your own custom redis you can save redis url in the environment variable "REDIS_URL" the default url is "redis://localhost:6379"
 
 == Dependencies
 
 * nokogiri
 * money
+* redis
 
 == Usage
 
@@ -25,8 +28,11 @@ With the gem, you do not need to manually add exchange rates. Calling update_rat
   money1.bank # eu_bank
 
   # call this before calculating exchange rates
-  # this will download the rates from ECB
-  eu_bank.update_rates
+  # this will download the rates from ECB and save it to reds
+  eu_bank.save_rates
+
+  # this will load the rates from redis cache
+  eu_bank.load_rates
 
   # exchange 100 CAD to USD
   # API is the same as the money gem
@@ -38,11 +44,11 @@ With the gem, you do not need to manually add exchange rates. Calling update_rat
 
 For performance reasons, you may prefer to read from a file instead. Furthermore, ECB publishes their rates daily. It makes sense to save the rates in a file to read from.
 
-  # saves the rates in a specified location
-  eu_bank.save_rates("/some/file/location/exchange_rates.xml")
+  # saves the rates in redis
+  eu_bank.save_rates
 
-  # reads the rates from the specified location
-  eu_bank.update_rates("/some/file/location/exchange_rates.xml")
+  # reads the rates from redis or the web if there is nothing cached in redis
+  eu_bank.load_rates
 
   # exchange 100 CAD to USD as usual
   eu_bank.exchange_with(Money.new(100, "CAD"), "USD") # Money.new(80, "USD")

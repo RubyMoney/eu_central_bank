@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name         = "eu_central_bank"
-  s.version      = "0.3.2"
+  s.version      = "0.3.3"
   s.platform     = Gem::Platform::RUBY
   s.authors      = ["Wong Liang Zan", "Shane Emmons", "Thorsten Böttger", "Jonathan Eisenstein"]
   s.email        = ["zan@liangzan.net"]
@@ -20,4 +20,3 @@ Gem::Specification.new do |s|
   s.files         = Dir.glob("lib/**/*") + %w(CHANGELOG.rdoc LICENSE README.rdoc)
   s.require_path = "lib"
 end
-

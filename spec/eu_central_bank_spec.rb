@@ -60,6 +60,14 @@ describe "EuCentralBank" do
     lu2.should_not eq(lu3)
   end
 
+  it 'should set rates_updated_at when the rates are downloaded' do
+    lu1 = @bank.rates_updated_at
+    @bank.update_rates(@cache_path)
+    lu2 = @bank.rates_updated_at
+
+    lu1.should_not eq(lu2)
+  end
+
   it "should return the correct exchange rates using exchange" do
     @bank.update_rates(@cache_path)
     EuCentralBank::CURRENCIES.each do |currency|

@@ -19,6 +19,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rr"
   s.add_development_dependency "shoulda"
 
-  s.files         = Dir.glob("lib/**/*") + %w(CHANGELOG.rdoc LICENSE README.rdoc)
+  s.files         = Dir.glob("lib/**/*") + %w(CHANGELOG.md LICENSE README.md)
   s.require_path = "lib"
 end

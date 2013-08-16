@@ -1,6 +1,6 @@
 # eu_central_bank
 
-{<img src="https://secure.travis-ci.org/RubyMoney/eu_central_bank.png?branch=master" alt="Build Status" />}[http://travis-ci.org/RubyMoney/eu_central_bank]
+[![Build Status](https://travis-ci.org/RubyMoney/eu_central_bank.png?branch=master)](https://travis-ci.org/RubyMoney/eu_central_bank)
 
 ## Introduction
 

@@ -21,3 +21,4 @@ Gemfile.lock
 
 ## PROJECT::SPECIFIC
 .rvmrc
+.ruby-gemset

@@ -10,7 +10,7 @@ class EuCentralBank < Money::Bank::VariableExchange
   attr_accessor :last_updated
   attr_accessor :rates_updated_at
 
-  ECB_RATES_URL = 'http://www.ecb.int/stats/eurofxref/eurofxref-daily.xml'
+  ECB_RATES_URL = 'http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml'
   CURRENCIES = %w(USD JPY BGN CZK DKK GBP HUF ILS LTL LVL PLN RON SEK CHF NOK HRK RUB TRY AUD BRL CAD CNY HKD IDR INR KRW MXN MYR NZD PHP SGD THB ZAR)
 
   def update_rates(cache=nil)

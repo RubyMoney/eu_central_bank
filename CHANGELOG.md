@@ -1,5 +1,10 @@
 # eu_central_bank changelog
 
+## 0.3.6 (Sep 4 2013)
+
+* Bank url change
+* fix ruby-version warning
+
 ## 0.3.0 (Jan 29 2012)
 
 * Updated Money dependency to 4.0.1

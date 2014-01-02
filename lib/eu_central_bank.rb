@@ -51,7 +51,9 @@ class EuCentralBank < Money::Bank::VariableExchange
 
   def doc(cache)
     rates_source = !!cache ? cache : ECB_RATES_URL
-    Nokogiri::XML(open(rates_source))
+    Nokogiri::XML(open(rates_source)).tap {|doc| doc.xpath('gesmes:Envelope/xmlns:Cube/xmlns:Cube//xmlns:Cube') }
+  rescue Nokogiri::XML::XPath::SyntaxError
+    Nokogiri::XML(open(ECB_RATES_URL))
   end
 
   def doc_from_s(content)

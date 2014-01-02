@@ -5,6 +5,7 @@ describe "EuCentralBank" do
   before(:each) do
     @bank = EuCentralBank.new
     @cache_path = File.expand_path(File.dirname(__FILE__) + '/exchange_rates.xml')
+    @illegal_cahce_path = File.expand_path(File.dirname(__FILE__) + '/illegal_exchange_rates.xml')
     @yml_cache_path = File.expand_path(File.dirname(__FILE__) + '/exchange_rates.yml')
     @tmp_cache_path = File.expand_path(File.dirname(__FILE__) + '/tmp/exchange_rates.xml')
     @exchange_rates = YAML.load_file(@yml_cache_path)
@@ -28,6 +29,14 @@ describe "EuCentralBank" do
   it "should update itself with exchange rates from ecb website" do
     stub(OpenURI::OpenRead).open(EuCentralBank::ECB_RATES_URL) {@cache_path}
     @bank.update_rates
+    EuCentralBank::CURRENCIES.each do |currency|
+      @bank.get_rate("EUR", currency).should > 0
+    end
+  end
+
+  it "should update itself with exchange rates from ecb website when the data get from cache is illegal" do
+    stub(OpenURI::OpenRead).open(EuCentralBank::ECB_RATES_URL) {@cache_path}
+    @bank.update_rates(@illegal_cahce_path)
     EuCentralBank::CURRENCIES.each do |currency|
       @bank.get_rate("EUR", currency).should > 0
     end

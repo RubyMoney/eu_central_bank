@@ -123,4 +123,37 @@ describe "EuCentralBank" do
     even_thread.kill
     odd_thread.kill    
   end
+
+  it "should exchange money atomically" do 
+    # NOTE: We need to introduce an artificial delay in the core get_rate
+    # function, otherwise it will take a lot of iterations to hit some sort or
+    # 'race-condition'
+    Money::Bank::VariableExchange.class_eval do 
+      alias_method :get_rate_original, :get_rate
+      def get_rate(*args)
+        sleep(Random.rand)
+        get_rate_original(*args)
+      end
+    end
+    even_rates = File.expand_path(File.dirname(__FILE__) + '/even_exchange_rates.xml')
+    odd_rates = File.expand_path(File.dirname(__FILE__) + '/odd_exchange_rates.xml')
+
+    odd_thread = Thread.new do 
+      while true; @bank.update_rates(odd_rates); end
+    end
+
+    even_thread = Thread.new do 
+      while true;  @bank.update_rates(even_rates); end
+    end
+
+    # Updating bank rates so that we're sure the test won't fail prematurely
+    # (i.e. even without odd_thread/even_thread getting a change to run)
+    @bank.update_rates(odd_rates) 
+
+    100.times do 
+      @bank.exchange(100, 'INR', 'INR').fractional.should eq(100)
+    end
+    even_thread.kill
+    odd_thread.kill    
+  end
 end

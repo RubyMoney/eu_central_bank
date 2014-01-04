@@ -60,15 +60,26 @@ class EuCentralBank < Money::Bank::VariableExchange
     Nokogiri::XML(content)
   end
 
+  # NOTE: We are creating a temporary bank object, adding rates to it one-by-
+  # one and then using it to replace the rates on `self` using import_rates.
+  # We need to do this because import_rates holds a lock on @mutex while ALL
+  # rates are being updated. This ensures that rate updation is always atomic
+  # in nature -- at no point in time will some other thread see an
+  # inconsistent view of the rates, i.e. few rates from this update & few
+  # rates from the previous update.
   def update_parsed_rates(doc)
     rates = doc.xpath('gesmes:Envelope/xmlns:Cube/xmlns:Cube//xmlns:Cube')
+
+    temp_bank = self.class.new
 
     rates.each do |exchange_rate|
       rate = exchange_rate.attribute("rate").value.to_f
       currency = exchange_rate.attribute("currency").value
-      add_rate("EUR", currency, rate)
+      temp_bank.add_rate("EUR", currency, rate)
     end
-    add_rate("EUR", "EUR", 1)
+    temp_bank.add_rate("EUR", "EUR", 1)
+
+    import_rates(:yaml, temp_bank.export_rates(:yaml))
 
     rates_updated_at = doc.xpath('gesmes:Envelope/xmlns:Cube/xmlns:Cube/@time').first.value
     @rates_updated_at = Time.parse(rates_updated_at)

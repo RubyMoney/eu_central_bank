@@ -40,8 +40,11 @@ class EuCentralBank < Money::Bank::VariableExchange
   def exchange_with(from, to_currency)
     rate = get_rate(from.currency, to_currency)
     unless rate
-      from_base_rate = get_rate("EUR", from.currency)
-      to_base_rate = get_rate("EUR", to_currency)
+      from_base_rate, to_base_rate = nil, nil
+      @mutex.synchronize {
+        from_base_rate = get_rate("EUR", from.currency, :without_mutex => true)
+        to_base_rate = get_rate("EUR", to_currency, :without_mutex => true)
+      }
       rate = to_base_rate / from_base_rate
     end
     Money.new(((Money::Currency.wrap(to_currency).subunit_to_unit.to_f / from.currency.subunit_to_unit.to_f) * from.cents * rate).round, to_currency)
@@ -63,12 +66,14 @@ class EuCentralBank < Money::Bank::VariableExchange
   def update_parsed_rates(doc)
     rates = doc.xpath('gesmes:Envelope/xmlns:Cube/xmlns:Cube//xmlns:Cube')
 
-    rates.each do |exchange_rate|
-      rate = exchange_rate.attribute("rate").value.to_f
-      currency = exchange_rate.attribute("currency").value
-      add_rate("EUR", currency, rate)
+    @mutex.synchronize do 
+      rates.each do |exchange_rate|
+        rate = exchange_rate.attribute("rate").value.to_f
+        currency = exchange_rate.attribute("currency").value
+        set_rate("EUR", currency, rate, :without_mutex => true)
+      end
+      set_rate("EUR", "EUR", 1, :without_mutex => true)
     end
-    add_rate("EUR", "EUR", 1)
 
     rates_updated_at = doc.xpath('gesmes:Envelope/xmlns:Cube/xmlns:Cube/@time').first.value
     @rates_updated_at = Time.parse(rates_updated_at)

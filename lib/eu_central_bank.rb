@@ -47,7 +47,7 @@ class EuCentralBank < Money::Bank::VariableExchange
       }
       rate = to_base_rate / from_base_rate
     end
-    Money.new(((Money::Currency.wrap(to_currency).subunit_to_unit.to_f / from.currency.subunit_to_unit.to_f) * from.cents * rate).round, to_currency)
+    Money.new(((BigDecimal(Money::Currency.wrap(to_currency).subunit_to_unit) / BigDecimal(from.currency.subunit_to_unit)) * from.cents * rate).round, to_currency)
   end
 
   protected
@@ -68,7 +68,7 @@ class EuCentralBank < Money::Bank::VariableExchange
 
     @mutex.synchronize do 
       rates.each do |exchange_rate|
-        rate = exchange_rate.attribute("rate").value.to_f
+        rate = BigDecimal(exchange_rate.attribute("rate").value)
         currency = exchange_rate.attribute("currency").value
         set_rate("EUR", currency, rate, :without_mutex => true)
       end

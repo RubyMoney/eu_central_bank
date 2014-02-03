@@ -1,35 +1,35 @@
 currencies:
-  USD: 1.3486
-  JPY: 125.32
-  BGN: 1.9558
-  CZK: 25.309
-  DKK: 7.4423
-  EEK: 15.6466
-  GBP: 0.87650
-  HUF: 264.93
-  LTL: 3.4528
-  LVL: 0.7074
-  PLN: 3.8861
-  RON: 4.1470
-  SEK: 9.6450
-  CHF: 1.4334
-  NOK: 7.9475
-  HRK: 7.2542
-  RUB: 39.2535
-  TRY: 2.0064
-  AUD: 1.4478
-  BRL: 2.3576
-  CAD: 1.3665
-  CNY: 9.2047
-  HKD: 10.4688
-  IDR: 12141.23
-  INR: 60.0060
-  ILS: 5.0492
-  KRW: 1507.69
-  MXN: 16.4647
-  MYR: 4.3209
-  NZD: 1.8961
-  PHP: 60.094
-  SGD: 1.8551
-  THB: 43.374
-  ZAR: 10.0235
+  USD: !ruby/object:BigDecimal 18:0.13486E1
+  JPY: !ruby/object:BigDecimal 18:0.12532E3
+  BGN: !ruby/object:BigDecimal 18:0.19558E1
+  CZK: !ruby/object:BigDecimal 18:0.25309E2
+  DKK: !ruby/object:BigDecimal 18:0.74423E1
+  EEK: !ruby/object:BigDecimal 18:0.156466E2
+  GBP: !ruby/object:BigDecimal 18:0.8765E0
+  HUF: !ruby/object:BigDecimal 18:0.26493E3
+  LTL: !ruby/object:BigDecimal 18:0.34528E1
+  LVL: !ruby/object:BigDecimal 18:0.7074E0
+  PLN: !ruby/object:BigDecimal 18:0.38861E1
+  RON: !ruby/object:BigDecimal 18:0.4147E1
+  SEK: !ruby/object:BigDecimal 18:0.9645E1
+  CHF: !ruby/object:BigDecimal 18:0.14334E1
+  NOK: !ruby/object:BigDecimal 18:0.79475E1
+  HRK: !ruby/object:BigDecimal 18:0.72542E1
+  RUB: !ruby/object:BigDecimal 18:0.392535E2
+  TRY: !ruby/object:BigDecimal 18:0.20064E1
+  AUD: !ruby/object:BigDecimal 18:0.14478E1
+  BRL: !ruby/object:BigDecimal 18:0.23576E1
+  CAD: !ruby/object:BigDecimal 18:0.13665E1
+  CNY: !ruby/object:BigDecimal 18:0.92047E1
+  HKD: !ruby/object:BigDecimal 18:0.104688E2
+  IDR: !ruby/object:BigDecimal 18:0.1214123E5
+  INR: !ruby/object:BigDecimal 18:0.60006E2
+  ILS: !ruby/object:BigDecimal 18:0.50492E1
+  KRW: !ruby/object:BigDecimal 18:0.150769E4
+  MXN: !ruby/object:BigDecimal 18:0.164647E2
+  MYR: !ruby/object:BigDecimal 18:0.43209E1
+  NZD: !ruby/object:BigDecimal 18:0.18961E1
+  PHP: !ruby/object:BigDecimal 18:0.60094E2
+  SGD: !ruby/object:BigDecimal 18:0.18551E1
+  THB: !ruby/object:BigDecimal 18:0.43374E2
+  ZAR: !ruby/object:BigDecimal 18:0.100235E2

@@ -80,18 +80,20 @@ describe "EuCentralBank" do
   it "should return the correct exchange rates using exchange" do
     @bank.update_rates(@cache_path)
     EuCentralBank::CURRENCIES.each do |currency|
-      subunit = Money::Currency.wrap(currency).subunit_to_unit.to_s.scan(/0/).count
-      @bank.exchange(100, "EUR", currency).to_f.should == (@exchange_rates["currencies"][currency].to_f).round(subunit)
+      subunit_to_unit  = Money::Currency.wrap(currency).subunit_to_unit
+      exchanged_amount = @bank.exchange(100, "EUR", currency)
+      exchanged_amount.cents.should == (@exchange_rates["currencies"][currency] * subunit_to_unit).round(0).to_i
     end
   end
 
   it "should return the correct exchange rates using exchange_with" do
     @bank.update_rates(@cache_path)
     EuCentralBank::CURRENCIES.each do |currency|
-      subunit = Money::Currency.wrap(currency).subunit_to_unit.to_s.scan(/0/).count
+      subunit_to_unit  = Money::Currency.wrap(currency).subunit_to_unit
+      amount_from_rate = (@exchange_rates["currencies"][currency] * subunit_to_unit).round(0).to_i
 
-      @bank.exchange_with(Money.new(100, "EUR"), currency).to_f.should == (@exchange_rates["currencies"][currency].to_f).round(subunit)
-      @bank.exchange_with(1.to_money("EUR"), currency).to_f.should == (@exchange_rates["currencies"][currency].to_f).round(subunit)
+      @bank.exchange_with(Money.new(100, "EUR"), currency).cents.should == amount_from_rate
+      @bank.exchange_with(1.to_money("EUR"), currency).cents.should == amount_from_rate
     end
   end
 

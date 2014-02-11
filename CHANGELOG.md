@@ -1,5 +1,9 @@
 # eu_central_bank changelog
 
+## 0.3.8 (Feb 12 2014)
+
+* Updated money version
+
 ## 0.3.6 (Sep 4 2013)
 
 * Bank url change

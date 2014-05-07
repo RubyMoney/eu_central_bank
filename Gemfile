@@ -4,6 +4,8 @@ source 'https://rubygems.org'
 
 gemspec
 
+gem 'i18n', '>= 0.6.9'
+
 group :test do
   gem "rake"
 end

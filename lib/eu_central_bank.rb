@@ -8,7 +8,7 @@ class InvalidCache < StandardError ; end
 class EuCentralBank < Money::Bank::VariableExchange
 
   attr_accessor :last_updated, :rates_updated_at
-  attr_accessor :historical_last_updated, :historical_rates_updates_at
+  attr_accessor :historical_last_updated, :historical_rates_updated_at
 
   ECB_URL = 'http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml'
   ECB_90_DAY_URL = 'http://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist-90d.xml'
@@ -23,10 +23,10 @@ class EuCentralBank < Money::Bank::VariableExchange
   end
 
   def save_rates(cache, url=ECB_URL)
-    raise InvalidCache if !cache
+    raise InvalidCache unless cache
     File.open(cache, "w") do |file|
       io = open(url);
-      io.each_line {|line| file.puts line}
+      io.each_line { |line| file.puts line }
     end
   end
 
@@ -47,8 +47,9 @@ class EuCentralBank < Money::Bank::VariableExchange
 
     unless get_rate(from, to_currency, {date: date})
       @mutex.synchronize do
-        from_base_rate = get_rate("EUR", from.currency.to_s, {date: date, without_mutex: true})
-        to_base_rate = get_rate("EUR", to_currency, {date: date, without_mutex: true})
+        opts = { date: date, without_mutex: true }
+        from_base_rate = get_rate("EUR", from.currency.to_s, opts)
+        to_base_rate = get_rate("EUR", to_currency, opts)
       end
       exchange_rate = to_base_rate / from_base_rate
     end

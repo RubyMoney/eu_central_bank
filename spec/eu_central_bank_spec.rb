@@ -5,9 +5,10 @@ describe "EuCentralBank" do
   before(:each) do
     @bank = EuCentralBank.new
     @dir_path = File.dirname(__FILE__)
-    @cache_path = File.expand_path(@dir_path + '/exchange_rates.xml')
+    @cache_path = File.expand_path(@dir_path + '/fixtures/exchange_rates.xml')
+    @history_cache_path = File.expand_path(@dir_path + '/fixtures/exchange_rates_90_day.xml')
     @tmp_cache_path = File.expand_path(@dir_path + '/tmp/exchange_rates.xml')
-    yml_cache_path = File.expand_path(@dir_path + '/exchange_rates.yml')
+    yml_cache_path = File.expand_path(@dir_path + '/fixtures/exchange_rates.yml')
     @exchange_rates = YAML.load_file(yml_cache_path)
   end
 
@@ -42,7 +43,7 @@ describe "EuCentralBank" do
   end
 
   it "should update itself with exchange rates from ecb website when the data get from cache is illegal" do
-    @illegal_cache_path = File.expand_path(@dir_path + '/illegal_exchange_rates.xml')
+    @illegal_cache_path = File.expand_path(@dir_path + '/fixtures/illegal_exchange_rates.xml')
     stub(OpenURI::OpenRead).open(EuCentralBank::ECB_URL) {@cache_path}
     @bank.update_rates(@illegal_cache_path)
 
@@ -87,6 +88,25 @@ describe "EuCentralBank" do
     lu1.should_not eq(lu2)
   end
 
+  it 'should set historical last_updated when the rates are downloaded' do
+    lu1 = @bank.historical_last_updated
+    @bank.update_historical_rates(@historical_cache_path)
+    lu2 = @bank.historical_last_updated
+    @bank.update_historical_rates(@historical_cache_path)
+    lu3 = @bank.historical_last_updated
+
+    lu1.should_not eq(lu2)
+    lu2.should_not eq(lu3)
+  end
+
+  it 'should set rates_updated_at when the rates are downloaded' do
+    lu1 = @bank.historical_rates_updated_at
+    @bank.update_historical_rates(@historical_cache_path)
+    lu2 = @bank.historical_rates_updated_at
+
+    lu1.should_not eq(lu2)
+  end
+
   it "should return the correct exchange rates using exchange" do
     @bank.update_rates(@cache_path)
 
@@ -98,10 +118,9 @@ describe "EuCentralBank" do
   end
 
   it "should return the correct exchange rates using historical exchange" do
-    yml_path = File.expand_path(File.dirname(__FILE__) + '/historical_exchange_rates.yml')
+    yml_path = File.expand_path(File.dirname(__FILE__) + '/fixtures/historical_exchange_rates.yml')
     historical_exchange_rates = YAML.load_file(yml_path)
-    history_cache_path = File.expand_path(@dir_path + '/exchange_rates_90_day.xml')
-    @bank.update_historical_rates(history_cache_path)
+    @bank.update_historical_rates(@history_cache_path)
 
     EuCentralBank::CURRENCIES.each do |currency|
       subunit_to_unit  = Money::Currency.wrap(currency).subunit_to_unit
@@ -121,65 +140,67 @@ describe "EuCentralBank" do
     end
   end
 
-  it "should update update_rates atomically" do
-    even_rates = File.expand_path(File.dirname(__FILE__) + '/even_exchange_rates.xml')
-    odd_rates = File.expand_path(File.dirname(__FILE__) + '/odd_exchange_rates.xml')
+  context "calling update_rates in a thread" do
+    it "should update update_rates atomically" do
+      even_rates = File.expand_path(@dir_path + '/fixtures/even_exchange_rates.xml')
+      odd_rates = File.expand_path(@dir_path + '/fixtures/odd_exchange_rates.xml')
 
-    odd_thread = Thread.new do
-      while true; @bank.update_rates(odd_rates); end
-    end
-
-    even_thread = Thread.new do
-      while true;  @bank.update_rates(even_rates); end
-    end
-
-    # Updating bank rates so that we're sure the test won't fail prematurely
-    # (i.e. even without odd_thread/even_thread getting a change to run)
-    @bank.update_rates(odd_rates)
-
-    100.times do
-      rates = YAML.load(@bank.export_rates(:yaml))
-      rates.delete('EUR_TO_EUR')
-      rates = rates.values.collect(&:to_i)
-      rates.length.should eq(34)
-      rates.should satisfy { |rates|
-        rates.all?(&:even?) or rates.all?(&:odd?)
-      }
-    end
-    even_thread.kill
-    odd_thread.kill
-  end
-
-  it "should exchange money atomically" do
-    # NOTE: We need to introduce an artificial delay in the core get_rate
-    # function, otherwise it will take a lot of iterations to hit some sort or
-    # 'race-condition'
-    Money::Bank::VariableExchange.class_eval do
-      alias_method :get_rate_original, :get_rate
-      def get_rate(*args)
-        sleep(Random.rand)
-        get_rate_original(*args)
+      odd_thread = Thread.new do
+        while true; @bank.update_rates(odd_rates); end
       end
-    end
-    even_rates = File.expand_path(File.dirname(__FILE__) + '/even_exchange_rates.xml')
-    odd_rates = File.expand_path(File.dirname(__FILE__) + '/odd_exchange_rates.xml')
 
-    odd_thread = Thread.new do
-      while true; @bank.update_rates(odd_rates); end
+      even_thread = Thread.new do
+        while true;  @bank.update_rates(even_rates); end
+      end
+
+      # Updating bank rates so that we're sure the test won't fail prematurely
+      # (i.e. even without odd_thread/even_thread getting a change to run)
+      @bank.update_rates(odd_rates)
+
+      100.times do
+        rates = YAML.load(@bank.export_rates(:yaml))
+        rates.delete('EUR_TO_EUR')
+        rates = rates.values.collect(&:to_i)
+        rates.length.should eq(34)
+        rates.should satisfy { |rates|
+          rates.all?(&:even?) or rates.all?(&:odd?)
+        }
+      end
+      even_thread.kill
+      odd_thread.kill
     end
 
-    even_thread = Thread.new do
-      while true;  @bank.update_rates(even_rates); end
-    end
+    it "should exchange money atomically" do
+      # NOTE: We need to introduce an artificial delay in the core get_rate
+      # function, otherwise it will take a lot of iterations to hit some sort or
+      # 'race-condition'
+      Money::Bank::VariableExchange.class_eval do
+        alias_method :get_rate_original, :get_rate
+        def get_rate(*args)
+          sleep(Random.rand)
+          get_rate_original(*args)
+        end
+      end
+      even_rates = File.expand_path(@dir_path + '/fixtures/even_exchange_rates.xml')
+      odd_rates = File.expand_path(@dir_path + '/fixtures/odd_exchange_rates.xml')
 
-    # Updating bank rates so that we're sure the test won't fail prematurely
-    # (i.e. even without odd_thread/even_thread getting a change to run)
-    @bank.update_rates(odd_rates)
+      odd_thread = Thread.new do
+        while true; @bank.update_rates(odd_rates); end
+      end
 
-    10.times do
-      @bank.exchange(100, 'INR', 'INR').fractional.should eq(100)
+      even_thread = Thread.new do
+        while true;  @bank.update_rates(even_rates); end
+      end
+
+      # Updating bank rates so that we're sure the test won't fail prematurely
+      # (i.e. even without odd_thread/even_thread getting a change to run)
+      @bank.update_rates(odd_rates)
+
+      10.times do
+        @bank.exchange(100, 'INR', 'INR').fractional.should eq(100)
+      end
+      even_thread.kill
+      odd_thread.kill
     end
-    even_thread.kill
-    odd_thread.kill
   end
 end

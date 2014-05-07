@@ -8,8 +8,7 @@ class InvalidCache < StandardError ; end
 class EuCentralBank < Money::Bank::VariableExchange
 
   attr_accessor :last_updated, :rates_updated_at
-  attr_accessor :historical_last_updated,
-    :historical_rates_updates_at
+  attr_accessor :historical_last_updated, :historical_rates_updates_at
 
   ECB_URL = 'http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml'
   ECB_90_DAY_URL = 'http://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist-90d.xml'
@@ -54,11 +53,7 @@ class EuCentralBank < Money::Bank::VariableExchange
       exchange_rate = to_base_rate / from_base_rate
     end
 
-    to_currency_money = BigDecimal(Money::Currency.wrap(to_currency).subunit_to_unit)
-    from_money = BigDecimal(from.currency.subunit_to_unit)
-    money_ratio = to_currency_money / from_money
-    money = (money_ratio * from.cents * exchange_rate).round
-    Money.new(money, to_currency)
+    calculate_exchange(from, to_currency, exchange_rate)
   end
 
   def get_rate(from, to, opts = {})
@@ -66,6 +61,20 @@ class EuCentralBank < Money::Bank::VariableExchange
       fn = -> { @rates[rate_key_for(from, to, opts[:date])] }
     else
       fn = -> { @rates[rate_key_for(from, to)] }
+    end
+
+    if opts[:without_mutex]
+      fn.call
+    else
+      @mutex.synchronize { fn.call }
+    end
+  end
+
+  def set_rate(from, to, rate, opts = {})
+    if opts[:date]
+      fn = -> { @rates[rate_key_for(from, to, opts[:date])] = rate }
+    else
+      fn = -> { @rates[rate_key_for(from, to)] = rate }
     end
 
     if opts[:without_mutex]
@@ -104,7 +113,6 @@ class EuCentralBank < Money::Bank::VariableExchange
 
     rates_updated_at = doc.xpath('gesmes:Envelope/xmlns:Cube/xmlns:Cube/@time').first.value
     @rates_updated_at = Time.parse(rates_updated_at)
-
     @last_updated = Time.now
   end
 
@@ -124,22 +132,17 @@ class EuCentralBank < Money::Bank::VariableExchange
 
     rates_updated_at = doc.xpath('gesmes:Envelope/xmlns:Cube/xmlns:Cube/@time').first.value
     @historical_rates_updated_at = Time.parse(rates_updated_at)
-
     @historical_last_updated = Time.now
   end
 
-  def set_rate(from, to, rate, opts = {})
-    if opts[:date]
-      fn = -> { @rates[rate_key_for(from, to, opts[:date])] = rate }
-    else
-      fn = -> { @rates[rate_key_for(from, to)] = rate }
-    end
+  private
 
-    if opts[:without_mutex]
-      fn.call
-    else
-      @mutex.synchronize { fn.call }
-    end
+  def calculate_exchange(from, to_currency, rate)
+    to_currency_money = BigDecimal(Money::Currency.wrap(to_currency).subunit_to_unit)
+    from_money = BigDecimal(from.currency.subunit_to_unit)
+    money_ratio = to_currency_money / from_money
+    money = (money_ratio * from.cents * rate).round
+    Money.new(money, to_currency)
   end
 
   def rate_key_for(from, to, date=nil)

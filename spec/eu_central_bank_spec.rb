@@ -93,7 +93,6 @@ describe "EuCentralBank" do
       amount_from_rate = (@exchange_rates["currencies"][currency] * subunit_to_unit).round(0).to_i
 
       @bank.exchange_with(Money.new(100, "EUR"), currency).cents.should == amount_from_rate
-      @bank.exchange_with(1.to_money("EUR"), currency).cents.should == amount_from_rate
     end
   end
 

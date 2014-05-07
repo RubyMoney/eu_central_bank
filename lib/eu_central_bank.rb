@@ -58,11 +58,7 @@ class EuCentralBank < Money::Bank::VariableExchange
   end
 
   def get_rate(from, to, opts = {})
-    if opts[:date]
-      fn = -> { @rates[rate_key_for(from, to, opts[:date])] }
-    else
-      fn = -> { @rates[rate_key_for(from, to)] }
-    end
+    fn = -> { @rates[rate_key_for(from, to, opts)] }
 
     if opts[:without_mutex]
       fn.call
@@ -72,11 +68,7 @@ class EuCentralBank < Money::Bank::VariableExchange
   end
 
   def set_rate(from, to, rate, opts = {})
-    if opts[:date]
-      fn = -> { @rates[rate_key_for(from, to, opts[:date])] = rate }
-    else
-      fn = -> { @rates[rate_key_for(from, to)] = rate }
-    end
+    fn = -> { @rates[rate_key_for(from, to, opts)] = rate }
 
     if opts[:without_mutex]
       fn.call
@@ -146,9 +138,9 @@ class EuCentralBank < Money::Bank::VariableExchange
     Money.new(money, to_currency)
   end
 
-  def rate_key_for(from, to, date=nil)
+  def rate_key_for(from, to, opts={})
     key = "#{from}_TO_#{to}"
-    key << "_#{date.to_s}" if date
+    key << "_#{opts[:date].to_s}" if opts[:date]
     key.upcase
   end
 end

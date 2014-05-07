@@ -4,11 +4,11 @@ require 'yaml'
 describe "EuCentralBank" do
   before(:each) do
     @bank = EuCentralBank.new
-    @cache_path = File.expand_path(File.dirname(__FILE__) + '/exchange_rates.xml')
-    @illegal_cahce_path = File.expand_path(File.dirname(__FILE__) + '/illegal_exchange_rates.xml')
-    @yml_cache_path = File.expand_path(File.dirname(__FILE__) + '/exchange_rates.yml')
-    @tmp_cache_path = File.expand_path(File.dirname(__FILE__) + '/tmp/exchange_rates.xml')
-    @exchange_rates = YAML.load_file(@yml_cache_path)
+    @dir_path = File.dirname(__FILE__)
+    @cache_path = File.expand_path(@dir_path + '/exchange_rates.xml')
+    @tmp_cache_path = File.expand_path(@dir_path + '/tmp/exchange_rates.xml')
+    yml_cache_path = File.expand_path(@dir_path + '/exchange_rates.yml')
+    @exchange_rates = YAML.load_file(yml_cache_path)
   end
 
   after(:each) do
@@ -22,6 +22,12 @@ describe "EuCentralBank" do
     File.exists?(@tmp_cache_path).should == true
   end
 
+  it "should save the xml file from ecb given a file path and url" do
+    tmp_history_cache_path = File.expand_path(@dir_path + '/tmp/exchange_rates_90_day.xml')
+    @bank.save_rates(tmp_history_cache_path, EuCentralBank::ECB_90_DAY_URL)
+    File.exists?(tmp_history_cache_path).should == true
+  end
+
   it "should raise an error if an invalid path is given to save_rates" do
     lambda { @bank.save_rates(nil) }.should raise_exception
   end
@@ -29,14 +35,17 @@ describe "EuCentralBank" do
   it "should update itself with exchange rates from ecb website" do
     stub(OpenURI::OpenRead).open(EuCentralBank::ECB_URL) {@cache_path}
     @bank.update_rates
+
     EuCentralBank::CURRENCIES.each do |currency|
       @bank.get_rate("EUR", currency).should > 0
     end
   end
 
   it "should update itself with exchange rates from ecb website when the data get from cache is illegal" do
+    @illegal_cache_path = File.expand_path(@dir_path + '/illegal_exchange_rates.xml')
     stub(OpenURI::OpenRead).open(EuCentralBank::ECB_URL) {@cache_path}
-    @bank.update_rates(@illegal_cahce_path)
+    @bank.update_rates(@illegal_cache_path)
+
     EuCentralBank::CURRENCIES.each do |currency|
       @bank.get_rate("EUR", currency).should > 0
     end
@@ -44,6 +53,7 @@ describe "EuCentralBank" do
 
   it "should update itself with exchange rates from cache" do
     @bank.update_rates(@cache_path)
+
     EuCentralBank::CURRENCIES.each do |currency|
       @bank.get_rate("EUR", currency).should > 0
     end
@@ -79,6 +89,7 @@ describe "EuCentralBank" do
 
   it "should return the correct exchange rates using exchange" do
     @bank.update_rates(@cache_path)
+
     EuCentralBank::CURRENCIES.each do |currency|
       subunit_to_unit  = Money::Currency.wrap(currency).subunit_to_unit
       exchanged_amount = @bank.exchange(100, "EUR", currency)
@@ -86,8 +97,22 @@ describe "EuCentralBank" do
     end
   end
 
+  it "should return the correct exchange rates using historical exchange" do
+    yml_path = File.expand_path(File.dirname(__FILE__) + '/historical_exchange_rates.yml')
+    historical_exchange_rates = YAML.load_file(yml_path)
+    history_cache_path = File.expand_path(@dir_path + '/exchange_rates_90_day.xml')
+    @bank.update_historical_rates(history_cache_path)
+
+    EuCentralBank::CURRENCIES.each do |currency|
+      subunit_to_unit  = Money::Currency.wrap(currency).subunit_to_unit
+      exchanged_amount = @bank.exchange(100, "EUR", currency, "2014-05-06")
+      exchanged_amount.cents.should == (historical_exchange_rates["currencies"][currency] * subunit_to_unit).round(0).to_i
+    end
+  end
+
   it "should return the correct exchange rates using exchange_with" do
     @bank.update_rates(@cache_path)
+
     EuCentralBank::CURRENCIES.each do |currency|
       subunit_to_unit  = Money::Currency.wrap(currency).subunit_to_unit
       amount_from_rate = (@exchange_rates["currencies"][currency] * subunit_to_unit).round(0).to_i

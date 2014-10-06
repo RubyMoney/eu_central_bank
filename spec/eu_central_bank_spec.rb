@@ -29,13 +29,12 @@ describe "EuCentralBank" do
     File.exists?(tmp_history_cache_path).should == true
   end
 
-
   it "should raise an error if an invalid path is given to save_rates" do
     lambda { @bank.save_rates(nil) }.should raise_exception
   end
 
   it "should update itself with exchange rates from ecb website" do
-    stub(OpenURI::OpenRead).open(EuCentralBank::ECB_RATES_URL) {@cache_path}
+    allow(OpenURI::OpenRead).to receive(:open).with(EuCentralBank::ECB_RATES_URL) {@cache_path}
     @bank.update_rates
     EuCentralBank::CURRENCIES.each do |currency|
       @bank.get_rate("EUR", currency).should > 0
@@ -44,7 +43,7 @@ describe "EuCentralBank" do
 
   it "should update itself with exchange rates from ecb website when the data get from cache is illegal" do
     illegal_cache_path = File.expand_path(@dir_path + '/illegal_exchange_rates.xml')
-    stub(OpenURI::OpenRead).open(EuCentralBank::ECB_RATES_URL) {@cache_path}
+    allow(OpenURI::OpenRead).to receive(:open).with(EuCentralBank::ECB_RATES_URL) {@cache_path}
     @bank.update_rates(illegal_cache_path)
     EuCentralBank::CURRENCIES.each do |currency|
       @bank.get_rate("EUR", currency).should > 0
@@ -59,7 +58,7 @@ describe "EuCentralBank" do
   end
 
   it "should export to a string a valid cache that can be reread" do
-    stub(OpenURI::OpenRead).open(EuCentralBank::ECB_RATES_URL) {@cache_path}
+    allow(OpenURI::OpenRead).to receive(:open).with(EuCentralBank::ECB_RATES_URL) {@cache_path}
     s = @bank.save_rates_to_s
     @bank.update_rates_from_s(s)
     EuCentralBank::CURRENCIES.each do |currency|
@@ -152,7 +151,7 @@ describe "EuCentralBank" do
     # (i.e. even without odd_thread/even_thread getting a change to run)
     @bank.update_rates(odd_rates)
 
-    10000.times do
+    10.times do
       rates = YAML.load(@bank.export_rates(:yaml))
       rates.delete('EUR_TO_EUR')
       rates = rates.values.collect(&:to_i)
@@ -191,7 +190,7 @@ describe "EuCentralBank" do
     # (i.e. even without odd_thread/even_thread getting a change to run)
     @bank.update_rates(odd_rates)
 
-    100.times do
+    10.times do
       @bank.exchange(100, 'INR', 'INR').fractional.should eq(100)
     end
     even_thread.kill

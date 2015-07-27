@@ -1,6 +1,6 @@
 # eu_central_bank
 
-[![Build Status](https://travis-ci.org/RubyMoney/eu_central_bank.png?branch=master)](https://travis-ci.org/RubyMoney/eu_central_bank)
+[![Build Status](https://travis-ci.org/RubyMoney/eu_central_bank.svg?branch=master)](https://travis-ci.org/RubyMoney/eu_central_bank)
 
 ## Introduction
 
@@ -52,9 +52,9 @@ eu_bank.save_rates(cache)
 # reads the rates from the specified location
 eu_bank.update_rates(cache)
 
-if !@bank.rates_updated_at || @bank.rates_updated_at < Time.now - 1.days
-  @bank.save_rates(cache)
-  @bank.update_rates(cache)
+if !eu_bank.rates_updated_at || eu_bank.rates_updated_at < Time.now - 1.days
+  eu_bank.save_rates(cache)
+  eu_bank.update_rates(cache)
 end
 
 # exchange 100 CAD to USD as usual

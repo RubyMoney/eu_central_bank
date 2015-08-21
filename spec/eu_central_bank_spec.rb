@@ -20,24 +20,24 @@ describe "EuCentralBank" do
 
   it "should save the xml file from ecb given a file path" do
     @bank.save_rates(@tmp_cache_path)
-    File.exists?(@tmp_cache_path).should == true
+    expect(File.exists?(@tmp_cache_path)).to eq(true)
   end
 
   it "should save the xml file from ecb given a file path and url" do
     tmp_history_cache_path = File.expand_path(@dir_path + '/tmp/exchange_rates_90_day.xml')
     @bank.save_rates(tmp_history_cache_path, EuCentralBank::ECB_90_DAY_URL)
-    File.exists?(tmp_history_cache_path).should == true
+    expect(File.exists?(tmp_history_cache_path)).to eq(true)
   end
 
   it "should raise an error if an invalid path is given to save_rates" do
-    lambda { @bank.save_rates(nil) }.should raise_exception
+    expect { @bank.save_rates(nil) }.to raise_exception
   end
 
   it "should update itself with exchange rates from ecb website" do
     allow(OpenURI::OpenRead).to receive(:open).with(EuCentralBank::ECB_RATES_URL) {@cache_path}
     @bank.update_rates
     EuCentralBank::CURRENCIES.each do |currency|
-      @bank.get_rate("EUR", currency).should > 0
+      expect(@bank.get_rate("EUR", currency)).to be > 0
     end
   end
 
@@ -46,14 +46,14 @@ describe "EuCentralBank" do
     allow(OpenURI::OpenRead).to receive(:open).with(EuCentralBank::ECB_RATES_URL) {@cache_path}
     @bank.update_rates(illegal_cache_path)
     EuCentralBank::CURRENCIES.each do |currency|
-      @bank.get_rate("EUR", currency).should > 0
+      expect(@bank.get_rate("EUR", currency)).to be > 0
     end
   end
 
   it "should update itself with exchange rates from cache" do
     @bank.update_rates(@cache_path)
     EuCentralBank::CURRENCIES.each do |currency|
-      @bank.get_rate("EUR", currency).should > 0
+      expect(@bank.get_rate("EUR", currency)).to be > 0
     end
   end
 
@@ -62,7 +62,7 @@ describe "EuCentralBank" do
     s = @bank.save_rates_to_s
     @bank.update_rates_from_s(s)
     EuCentralBank::CURRENCIES.each do |currency|
-      @bank.get_rate("EUR", currency).should > 0
+      expect(@bank.get_rate("EUR", currency)).to be > 0
     end
   end
 
@@ -73,8 +73,8 @@ describe "EuCentralBank" do
     @bank.update_rates(@cache_path)
     lu3 = @bank.last_updated
 
-    lu1.should_not eq(lu2)
-    lu2.should_not eq(lu3)
+    expect(lu1).not_to eq(lu2)
+    expect(lu2).not_to eq(lu3)
   end
 
   it 'should set rates_updated_at when the rates are downloaded' do
@@ -82,7 +82,7 @@ describe "EuCentralBank" do
     @bank.update_rates(@cache_path)
     lu2 = @bank.rates_updated_at
 
-    lu1.should_not eq(lu2)
+    expect(lu1).not_to eq(lu2)
   end
 
   it 'should set historical last_updated when the rates are downloaded' do
@@ -92,8 +92,8 @@ describe "EuCentralBank" do
     @bank.update_historical_rates(@history_cache_path)
     lu3 = @bank.historical_last_updated
 
-    lu1.should_not eq(lu2)
-    lu2.should_not eq(lu3)
+    expect(lu1).not_to eq(lu2)
+    expect(lu2).not_to eq(lu3)
   end
 
   it 'should set rates_updated_at when the rates are downloaded' do
@@ -101,7 +101,7 @@ describe "EuCentralBank" do
     @bank.update_historical_rates(@history_cache_path)
     lu2 = @bank.historical_rates_updated_at
 
-    lu1.should_not eq(lu2)
+    expect(lu1).not_to eq(lu2)
   end
 
   it "should return the correct exchange rates using exchange" do
@@ -109,7 +109,7 @@ describe "EuCentralBank" do
     EuCentralBank::CURRENCIES.each do |currency|
       subunit_to_unit  = Money::Currency.wrap(currency).subunit_to_unit
       exchanged_amount = @bank.exchange(100, "EUR", currency)
-      exchanged_amount.cents.should == (@exchange_rates["currencies"][currency] * subunit_to_unit).round(0).to_i
+      expect(exchanged_amount.cents).to eq((@exchange_rates["currencies"][currency] * subunit_to_unit).round(0).to_i)
     end
   end
 
@@ -119,7 +119,7 @@ describe "EuCentralBank" do
       subunit_to_unit  = Money::Currency.wrap(currency).subunit_to_unit
       amount_from_rate = (@exchange_rates["currencies"][currency] * subunit_to_unit).round(0).to_i
 
-      @bank.exchange_with(Money.new(100, "EUR"), currency).cents.should == amount_from_rate
+      expect(@bank.exchange_with(Money.new(100, "EUR"), currency).cents).to eq(amount_from_rate)
     end
   end
 
@@ -131,7 +131,7 @@ describe "EuCentralBank" do
     EuCentralBank::CURRENCIES.each do |currency|
       subunit_to_unit  = Money::Currency.wrap(currency).subunit_to_unit
       exchanged_amount = @bank.exchange(100, "EUR", currency, "2014-05-06")
-      exchanged_amount.cents.should == (historical_exchange_rates["currencies"][currency] * subunit_to_unit).round(0).to_i
+      expect(exchanged_amount.cents).to eq((historical_exchange_rates["currencies"][currency] * subunit_to_unit).round(0).to_i)
     end
   end
 
@@ -155,8 +155,8 @@ describe "EuCentralBank" do
       rates = YAML.load(@bank.export_rates(:yaml))
       rates.delete('EUR_TO_EUR')
       rates = rates.values.collect(&:to_i)
-      rates.length.should eq(34)
-      rates.should satisfy { |rates|
+      expect(rates.length).to eq(34)
+      expect(rates).to satisfy { |rates|
         rates.all?(&:even?) or rates.all?(&:odd?)
       }
     end
@@ -191,7 +191,7 @@ describe "EuCentralBank" do
     @bank.update_rates(odd_rates)
 
     10.times do
-      @bank.exchange(100, 'INR', 'INR').fractional.should eq(100)
+      expect(@bank.exchange(100, 'INR', 'INR').fractional).to eq(100)
     end
     even_thread.kill
     odd_thread.kill

@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
   s.platform     = Gem::Platform::RUBY
   s.authors      = ["Shane Emmons"]
   s.email        = ["shane@emmons.io"]
-  s.homepage     = "http://github.com/RubyMoney/eu_central_bank"
+  s.homepage     = "https://github.com/RubyMoney/eu_central_bank"
   s.summary      = "Calculates exchange rates based on rates from european central bank. Money gem compatible."
   s.description  = "This gem reads exchange rates from the european central bank website. It uses it to calculates exchange rates. It is compatible with the money gem"
 

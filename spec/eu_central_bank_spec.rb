@@ -30,7 +30,7 @@ describe "EuCentralBank" do
   end
 
   it "should raise an error if an invalid path is given to save_rates" do
-    expect { @bank.save_rates(nil) }.to raise_exception
+    expect { @bank.save_rates(nil) }.to raise_exception(InvalidCache)
   end
 
   it "should update itself with exchange rates from ecb website" do

@@ -8,13 +8,16 @@ describe "EuCentralBank" do
     @cache_path = File.expand_path(@dir_path + '/exchange_rates.xml')
     @history_cache_path = File.expand_path(@dir_path + '/exchange_rates_90_day.xml')
     @tmp_cache_path = File.expand_path(@dir_path + '/tmp/exchange_rates.xml')
+    @tmp_history_cache_path = File.expand_path(@dir_path + '/tmp/exchange_rates_90_day.xml')
     yml_cache_path = File.expand_path(@dir_path + '/exchange_rates.yml')
     @exchange_rates = YAML.load_file(yml_cache_path)
   end
 
   after(:each) do
-    if File.exists? @tmp_cache_path
-      File.delete @tmp_cache_path
+    [@tmp_cache_path, @tmp_history_cache_path].each do |file_name|
+      if File.exists? file_name
+        File.delete file_name
+      end
     end
   end
 
@@ -24,9 +27,8 @@ describe "EuCentralBank" do
   end
 
   it "should save the xml file from ecb given a file path and url" do
-    tmp_history_cache_path = File.expand_path(@dir_path + '/tmp/exchange_rates_90_day.xml')
-    @bank.save_rates(tmp_history_cache_path, EuCentralBank::ECB_90_DAY_URL)
-    expect(File.exists?(tmp_history_cache_path)).to eq(true)
+    @bank.save_rates(@tmp_history_cache_path, EuCentralBank::ECB_90_DAY_URL)
+    expect(File.exists?(@tmp_history_cache_path)).to eq(true)
   end
 
   it "should raise an error if an invalid path is given to save_rates" do

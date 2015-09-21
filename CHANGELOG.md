@@ -1,5 +1,11 @@
 # eu_central_bank changelog
 
+## Next release
+
+* Not Support for LTL
+* Update money version
+* Fix a couple of Ruby warnings found in specs
+
 ## 0.3.8 (Feb 12 2014)
 
 * Updated money version

@@ -1,7 +1,8 @@
 # eu_central_bank changelog
 
-## Next release
+## 1.0.0
 
+* Update to Money 6.7.0
 * Not Support for LTL
 * Update money version
 * Fix a couple of Ruby warnings found in specs

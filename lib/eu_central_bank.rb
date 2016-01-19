@@ -45,10 +45,10 @@ class EuCentralBank < Money::Bank::VariableExchange
 
   def exchange_with(from, to_currency, date=nil)
     from_base_rate, to_base_rate = nil, nil
-    rate = get_rate(from, to_currency, {:date => date})
+    rate = get_rate(from.currency, to_currency, {:date => date})
 
     unless rate
-      @mutex.synchronize do
+      store.transaction do
         opts = { :date => date, :without_mutex => true }
         from_base_rate = get_rate("EUR", from.currency.to_s, opts)
         to_base_rate = get_rate("EUR", to_currency, opts)
@@ -60,23 +60,11 @@ class EuCentralBank < Money::Bank::VariableExchange
   end
 
   def get_rate(from, to, opts = {})
-    fn = -> { @rates[rate_key_for(from, to, opts)] }
-
-    if opts[:without_mutex]
-      fn.call
-    else
-      @mutex.synchronize { fn.call }
-    end
+    store.get_rate(::Money::Currency.wrap(from).iso_code, ::Money::Currency.wrap(to).iso_code)
   end
 
   def set_rate(from, to, rate, opts = {})
-    fn = -> { @rates[rate_key_for(from, to, opts)] = rate }
-
-    if opts[:without_mutex]
-      fn.call
-    else
-      @mutex.synchronize { fn.call }
-    end
+    store.add_rate(::Money::Currency.wrap(from).iso_code, ::Money::Currency.wrap(to).iso_code, rate)
   end
 
   protected
@@ -95,13 +83,13 @@ class EuCentralBank < Money::Bank::VariableExchange
   def update_parsed_rates(doc)
     rates = doc.xpath('gesmes:Envelope/xmlns:Cube/xmlns:Cube//xmlns:Cube')
 
-    @mutex.synchronize do
+    store.transaction do
       rates.each do |exchange_rate|
         rate = BigDecimal(exchange_rate.attribute("rate").value)
         currency = exchange_rate.attribute("currency").value
-        set_rate("EUR", currency, rate, :without_mutex => true)
+        set_rate("EUR", currency, rate)
       end
-      set_rate("EUR", "EUR", 1, :without_mutex => true)
+      set_rate("EUR", "EUR", 1)
     end
 
     rates_updated_at = doc.xpath('gesmes:Envelope/xmlns:Cube/xmlns:Cube/@time').first.value
@@ -113,14 +101,13 @@ class EuCentralBank < Money::Bank::VariableExchange
   def update_parsed_historical_rates(doc)
     rates = doc.xpath('gesmes:Envelope/xmlns:Cube/xmlns:Cube//xmlns:Cube')
 
-    @mutex.synchronize do
+    store.transaction do
       rates.each do |exchange_rate|
         rate = BigDecimal(exchange_rate.attribute("rate").value)
         currency = exchange_rate.attribute("currency").value
         opts = { :without_mutex => true }
         opts[:date] = exchange_rate.parent.attribute("time").value
         set_rate("EUR", currency, rate, opts)
-        set_rate("EUR", "EUR", 1, opts)
       end
     end
 
@@ -138,11 +125,5 @@ class EuCentralBank < Money::Bank::VariableExchange
     decimal_money = BigDecimal(to_currency_money) / BigDecimal(from_currency_money)
     money = (decimal_money * from.cents * rate).round
     Money.new(money, to_currency)
-  end
-
-  def rate_key_for(from, to, opts)
-    key = "#{from}_TO_#{to}"
-    key << "_#{opts[:date].to_s}" if opts[:date]
-    key.upcase
   end
 end

@@ -51,13 +51,12 @@ class EuCentralBank < Money::Bank::VariableExchange
 
   def exchange_with(from, to_currency, date=nil)
     from_base_rate, to_base_rate = nil, nil
-    rate = get_rate(from.currency, to_currency, {:date => date})
+    rate = get_rate(from.currency, to_currency, date)
 
     unless rate
       store.transaction do
-        opts = { :date => date, :without_mutex => true }
-        from_base_rate = get_rate("EUR", from.currency.to_s, opts)
-        to_base_rate = get_rate("EUR", to_currency, opts)
+        from_base_rate = get_rate("EUR", from.currency.to_s, date)
+        to_base_rate = get_rate("EUR", to_currency, date)
       end
       rate = to_base_rate / from_base_rate
     end
@@ -79,6 +78,14 @@ class EuCentralBank < Money::Bank::VariableExchange
       date = date[:date]
     end
     store.add_rate(::Money::Currency.wrap(from).iso_code, ::Money::Currency.wrap(to).iso_code, rate, date)
+  end
+
+  def rates
+    store.transaction do
+      store.each_rate.each_with_object({}) do |(from,to,rate,date),hash|
+        hash[[from, to].join(SERIALIZER_SEPARATOR) + (date ? "_#{date.to_s}" : "")] = rate
+      end
+    end
   end
 
   protected
@@ -119,9 +126,8 @@ class EuCentralBank < Money::Bank::VariableExchange
       rates.each do |exchange_rate|
         rate = BigDecimal(exchange_rate.attribute("rate").value)
         currency = exchange_rate.attribute("currency").value
-        opts = { :without_mutex => true }
-        opts[:date] = exchange_rate.parent.attribute("time").value
-        set_rate("EUR", currency, rate, opts)
+        date = exchange_rate.parent.attribute("time").value
+        set_rate("EUR", currency, rate, date)
       end
     end
 

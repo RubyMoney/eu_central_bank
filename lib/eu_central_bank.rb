@@ -81,10 +81,8 @@ class EuCentralBank < Money::Bank::VariableExchange
   end
 
   def rates
-    store.transaction do
-      store.each_rate.each_with_object({}) do |(from,to,rate,date),hash|
-        hash[[from, to].join(SERIALIZER_SEPARATOR) + (date ? "_#{date.to_s}" : "")] = rate
-      end
+    store.each_rate.each_with_object({}) do |(from,to,rate,date),hash|
+      hash[[from, to].join(SERIALIZER_SEPARATOR) + (date ? "_#{date.to_s}" : "")] = rate
     end
   end
 

@@ -1,6 +1,7 @@
 require 'open-uri'
 require 'nokogiri'
 require 'money'
+require 'money/rates_store/eu_central_bank_historical_data_support'
 
 class InvalidCache < StandardError ; end
 
@@ -14,6 +15,11 @@ class EuCentralBank < Money::Bank::VariableExchange
   CURRENCIES = %w(USD JPY BGN CZK DKK GBP HUF ILS PLN RON SEK CHF NOK HRK RUB TRY AUD BRL CAD CNY HKD IDR INR KRW MXN MYR NZD PHP SGD THB ZAR).map(&:freeze).freeze
   ECB_RATES_URL = 'http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml'.freeze
   ECB_90_DAY_URL = 'http://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist-90d.xml'.freeze
+
+  def initialize(*)
+    super
+    @store.extend Money::RatesStore::EuCentralBankHistoricalDataSupport
+  end
 
   def update_rates(cache=nil)
     update_parsed_rates(doc(cache))
@@ -59,12 +65,20 @@ class EuCentralBank < Money::Bank::VariableExchange
     calculate_exchange(from, to_currency, rate)
   end
 
-  def get_rate(from, to, opts = {})
-    store.get_rate(::Money::Currency.wrap(from).iso_code, ::Money::Currency.wrap(to).iso_code)
+  def get_rate(from, to, date = nil)
+    if date.is_a?(Hash)
+      # Backwards compatibility for the opts hash
+      date = date[:date]
+    end
+    store.get_rate(::Money::Currency.wrap(from).iso_code, ::Money::Currency.wrap(to).iso_code, date)
   end
 
-  def set_rate(from, to, rate, opts = {})
-    store.add_rate(::Money::Currency.wrap(from).iso_code, ::Money::Currency.wrap(to).iso_code, rate)
+  def set_rate(from, to, rate, date = nil)
+    if date.is_a?(Hash)
+      # Backwards compatibility for the opts hash
+      date = date[:date]
+    end
+    store.add_rate(::Money::Currency.wrap(from).iso_code, ::Money::Currency.wrap(to).iso_code, rate, date)
   end
 
   protected

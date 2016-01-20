@@ -158,8 +158,8 @@ describe "EuCentralBank" do
       rates.delete('EUR_TO_EUR')
       rates = rates.values.collect(&:to_i)
       expect(rates.length).to eq(34)
-      expect(rates).to satisfy { |rates|
-        rates.all?(&:even?) or rates.all?(&:odd?)
+      expect(rates).to satisfy { |rts|
+        rts.all?(&:even?) or rts.all?(&:odd?)
       }
     end
     even_thread.kill

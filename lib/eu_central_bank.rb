@@ -86,6 +86,30 @@ class EuCentralBank < Money::Bank::VariableExchange
     end
   end
 
+  def import_rates(format, s, opts = {})
+    raise Money::Bank::UnknownRateFormat unless
+      RATE_FORMATS.include? format
+
+    store.transaction do
+      data = case format
+       when :json
+         JSON.load(s)
+       when :ruby
+         Marshal.load(s)
+       when :yaml
+         YAML.load(s)
+       end
+
+      data.each do |key, rate|
+        from, to = key.split(SERIALIZER_SEPARATOR)
+        to, date = to.split("_")
+        store.add_rate from, to, rate, date
+      end
+    end
+
+    self
+  end
+
   protected
 
   def doc(cache, url=ECB_RATES_URL)

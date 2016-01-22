@@ -80,6 +80,28 @@ class EuCentralBank < Money::Bank::VariableExchange
     store.add_rate(::Money::Currency.wrap(from).iso_code, ::Money::Currency.wrap(to).iso_code, rate, date)
   end
 
+  def export_rates(format, file = nil, opts = {})
+    raise Money::Bank::UnknownRateFormat unless
+      RATE_FORMATS.include? format
+
+    store.transaction true do
+      s = case format
+      when :json
+        JSON.dump(rates)
+      when :ruby
+        Marshal.dump(rates)
+      when :yaml
+        YAML.dump(rates)
+      end
+
+      unless file.nil?
+        File.open(file, "w") {|f| f.write(s) }
+      end
+
+      s
+    end
+  end
+
   def rates
     store.each_rate.each_with_object({}) do |(from,to,rate,date),hash|
       hash[[from, to].join(SERIALIZER_SEPARATOR) + (date ? "_#{date.to_s}" : "")] = rate

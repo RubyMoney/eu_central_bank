@@ -24,7 +24,9 @@ module Money::RatesStore
     #   end
     def each_rate(&block)
       enum = Enumerator.new do |yielder|
-        index.each do |key, rate|
+        # Duplicate index here so that it is not changed while we are reading
+        # the values from it.
+        index.dup.each do |key, rate|
           iso_from, iso_to = key.split(Memory::INDEX_KEY_SEPARATOR)
           iso_to, date = iso_to.split("_")
           date = Date.parse(date) if date

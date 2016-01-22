@@ -35,21 +35,6 @@ module Money::RatesStore
       block_given? ? enum.each(&block) : enum
     end
 
-    # Wraps block execution in a thread-safe transaction
-    # Modified to support focing the synchronize to be called
-    def transaction(force_mutex=false, &block)
-      if !force_mutex && (@in_transaction || options[:without_mutex])
-        block.call self
-      else
-        @mutex.synchronize do
-          @in_transaction = true
-          result = block.call
-          @in_transaction = false
-          result
-        end
-      end
-    end
-
     private
 
       def rate_key_for(currency_iso_from, currency_iso_to, date = nil)

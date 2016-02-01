@@ -86,11 +86,33 @@ class EuCentralBank < Money::Bank::VariableExchange
     end
   end
 
+  def export_rates(format, file = nil, opts = {})
+    raise Money::Bank::UnknownRateFormat unless
+      RATE_FORMATS.include? format
+
+    store.transaction true do
+      s = case format
+      when :json
+        JSON.dump(rates)
+      when :ruby
+        Marshal.dump(rates)
+      when :yaml
+        YAML.dump(rates)
+      end
+
+      unless file.nil?
+        File.open(file, "w") {|f| f.write(s) }
+      end
+
+      s
+    end
+  end
+
   def import_rates(format, s, opts = {})
     raise Money::Bank::UnknownRateFormat unless
       RATE_FORMATS.include? format
 
-    store.transaction do
+    store.transaction true do
       data = case format
        when :json
          JSON.load(s)
@@ -102,8 +124,7 @@ class EuCentralBank < Money::Bank::VariableExchange
 
       data.each do |key, rate|
         from, to = key.split(SERIALIZER_SEPARATOR)
-        to, date = to.split("_")
-        store.add_rate from, to, rate, date
+        store.add_rate from, to, rate
       end
     end
 

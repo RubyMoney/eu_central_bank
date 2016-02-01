@@ -54,7 +54,7 @@ class EuCentralBank < Money::Bank::VariableExchange
     rate = get_rate(from.currency, to_currency, date)
 
     unless rate
-      store.transaction do
+      store.transaction true do
         from_base_rate = get_rate("EUR", from.currency.to_s, date)
         to_base_rate = get_rate("EUR", to_currency, date)
       end

@@ -126,7 +126,7 @@ class EuCentralBank < Money::Bank::VariableExchange
   def update_parsed_rates(doc)
     rates = doc.xpath('gesmes:Envelope/xmlns:Cube/xmlns:Cube//xmlns:Cube')
 
-    store.transaction do
+    store.transaction true do
       rates.each do |exchange_rate|
         rate = BigDecimal(exchange_rate.attribute("rate").value)
         currency = exchange_rate.attribute("currency").value
@@ -144,7 +144,7 @@ class EuCentralBank < Money::Bank::VariableExchange
   def update_parsed_historical_rates(doc)
     rates = doc.xpath('gesmes:Envelope/xmlns:Cube/xmlns:Cube//xmlns:Cube')
 
-    store.transaction do
+    store.transaction true do
       rates.each do |exchange_rate|
         rate = BigDecimal(exchange_rate.attribute("rate").value)
         currency = exchange_rate.attribute("currency").value

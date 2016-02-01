@@ -12,6 +12,8 @@ class EuCentralBank < Money::Bank::VariableExchange
   attr_accessor :historical_last_updated
   attr_accessor :historical_rates_updated_at
 
+  SERIALIZER_DATE_SEPARATOR = '_AT_'
+
   CURRENCIES = %w(USD JPY BGN CZK DKK GBP HUF ILS PLN RON SEK CHF NOK HRK RUB TRY AUD BRL CAD CNY HKD IDR INR KRW MXN MYR NZD PHP SGD THB ZAR).map(&:freeze).freeze
   ECB_RATES_URL = 'http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml'.freeze
   ECB_90_DAY_URL = 'http://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist-90d.xml'.freeze
@@ -82,7 +84,9 @@ class EuCentralBank < Money::Bank::VariableExchange
 
   def rates
     store.each_rate.each_with_object({}) do |(from,to,rate,date),hash|
-      hash[[from, to].join(SERIALIZER_SEPARATOR) + (date ? "_#{date.to_s}" : "")] = rate
+      key = [from, to].join(SERIALIZER_SEPARATOR)
+      key = [key, date.to_s].join(SERIALIZER_DATE_SEPARATOR) if date
+      hash[key] = rate
     end
   end
 
@@ -124,7 +128,8 @@ class EuCentralBank < Money::Bank::VariableExchange
 
       data.each do |key, rate|
         from, to = key.split(SERIALIZER_SEPARATOR)
-        store.add_rate from, to, rate
+        to, date = to.split(SERIALIZER_DATE_SEPARATOR)
+        store.add_rate from, to, rate, date
       end
     end
 

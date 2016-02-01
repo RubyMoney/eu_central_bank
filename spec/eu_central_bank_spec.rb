@@ -72,6 +72,7 @@ describe "EuCentralBank" do
     lu1 = @bank.last_updated
     @bank.update_rates(@cache_path)
     lu2 = @bank.last_updated
+    sleep(0.01)
     @bank.update_rates(@cache_path)
     lu3 = @bank.last_updated
 

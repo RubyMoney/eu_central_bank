@@ -4,7 +4,6 @@
 
 * Update to Money 6.7.0
 * Not Support for LTL
-* Update money version
 * Fix a couple of Ruby warnings found in specs
 
 ## 0.3.8 (Feb 12 2014)

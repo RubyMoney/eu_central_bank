@@ -1,6 +1,10 @@
 # eu_central_bank changelog
 
-## 1.0.0
+## 1.0.1 (May 20 2016)
+
+* Fixed compatibility with recent Money gem
+
+## 1.0.0 (Jan 15 2016)
 
 * Update to Money 6.7.0
 * Not Support for LTL

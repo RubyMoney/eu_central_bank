@@ -199,4 +199,11 @@ describe "EuCentralBank" do
     even_thread.kill
     odd_thread.kill
   end
+
+  it "should raise an error when currency is not available in currency list" do
+    expect { @bank.get_rate(EuCentralBank::CURRENCIES.first,"CLP")}.to raise_exception(CurrencyUnavailable)
+    expect { @bank.get_rate("CLP",EuCentralBank::CURRENCIES.first)}.to raise_exception(CurrencyUnavailable)
+    expect { @bank.get_rate("ARG","CLP")}.to raise_exception(CurrencyUnavailable)
+    expect { @bank.get_rate("CLP","ARG")}.to raise_exception(CurrencyUnavailable)
+  end
 end

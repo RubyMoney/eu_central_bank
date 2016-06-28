@@ -5,6 +5,8 @@ require 'money/rates_store/eu_central_bank_historical_data_support'
 
 class InvalidCache < StandardError ; end
 
+class CurrencyUnavailable < StandardError; end
+
 class EuCentralBank < Money::Bank::VariableExchange
 
   attr_accessor :last_updated
@@ -67,6 +69,8 @@ class EuCentralBank < Money::Bank::VariableExchange
   end
 
   def get_rate(from, to, date = nil)
+    check_currency_available(from)
+    check_currency_available(to)
     if date.is_a?(Hash)
       # Backwards compatibility for the opts hash
       date = date[:date]
@@ -134,6 +138,13 @@ class EuCentralBank < Money::Bank::VariableExchange
     end
 
     self
+  end
+
+  def check_currency_available(currency)
+    currency_string = currency.to_s
+    return true if currency_string == "EUR"
+    return true if CURRENCIES.include?(currency_string)
+    raise CurrencyUnavailable, "No rates available for #{@currency_string}"
   end
 
   protected

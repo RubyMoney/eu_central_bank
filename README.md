@@ -70,4 +70,4 @@ eu_bank.exchange_with(Money.new(100, "CAD"), "USD") # Money.new(80, "USD")
 
 ## Copyright
 
-Copyright (c) 2010-2013 RubyMoney. See LICENSE for details.
+Copyright (c) 2010-2016 RubyMoney. See LICENSE for details.

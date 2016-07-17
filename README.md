@@ -22,6 +22,7 @@ gem install eu_central_bank
 With the gem, you do not need to manually add exchange rates. Calling update_rates will download the rates from the European Central Bank. The API is the same as the money gem. Feel free to use Money objects with the bank.
 
 ``` ruby
+require 'eu_central_bank'
 eu_bank = EuCentralBank.new
 Money.default_bank = eu_bank
 money1 = Money.new(10)

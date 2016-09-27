@@ -10,27 +10,27 @@ module Money::RatesStore
       transaction { index[rate_key_for(currency_iso_from, currency_iso_to, date)] }
     end
 
-  # Wraps block execution in a thread-safe transaction
-  def transaction(force_sync = false, &block)
-    # Ruby 1.9.3 does not support @mutex.owned?
-    if @mutex.respond_to?(:owned?)
-      force_sync = false if @mutex.locked? && @mutex.owned?
-    else
-      # If we allowed this in Ruby 1.9.3, it might possibly cause recursive
-      # locking within the same thread.
-      force_sync = false
-    end
-    if !force_sync && (@in_transaction || options[:without_mutex])
-      block.call self
-    else
-      @mutex.synchronize do
-        @in_transaction = true
-        result = block.call
-        @in_transaction = false
-        result
+    # Wraps block execution in a thread-safe transaction
+    def transaction(force_sync = false, &block)
+      # Ruby 1.9.3 does not support @mutex.owned?
+      if @mutex.respond_to?(:owned?)
+        force_sync = false if @mutex.locked? && @mutex.owned?
+      else
+        # If we allowed this in Ruby 1.9.3, it might possibly cause recursive
+        # locking within the same thread.
+        force_sync = false
+      end
+      if !force_sync && (@in_transaction || options[:without_mutex])
+        block.call self
+      else
+        @mutex.synchronize do
+          @in_transaction = true
+          result = block.call
+          @in_transaction = false
+          result
+        end
       end
     end
-  end
 
     # Iterate over rate tuples (iso_from, iso_to, rate)
     #
@@ -65,6 +65,5 @@ module Money::RatesStore
         key = [key, date.to_s].join(INDEX_DATE_SEPARATOR) if date
         key.upcase
       end
-
   end
 end

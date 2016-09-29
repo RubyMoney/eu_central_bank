@@ -206,4 +206,18 @@ describe "EuCentralBank" do
     expect { @bank.get_rate("ARG","CLP")}.to raise_exception(CurrencyUnavailable)
     expect { @bank.get_rate("CLP","ARG")}.to raise_exception(CurrencyUnavailable)
   end
+
+  it "should return 1 for equivilent rates" do
+    expect(@bank.get_rate('EUR', 'EUR')).to eq(1)
+    expect(@bank.get_rate('AUD', 'AUD')).to eq(1)
+  end
+
+  it "should not fail when calculating rate from historical base rates" do
+    @bank.update_historical_rates
+
+    expect {
+      @bank.exchange(100, 'GBP', 'EUR', Date.today - 7)
+    }.not_to raise_error
+  end
 end
+

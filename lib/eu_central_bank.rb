@@ -69,12 +69,16 @@ class EuCentralBank < Money::Bank::VariableExchange
   end
 
   def get_rate(from, to, date = nil)
+    return 1 if from == to
+
     check_currency_available(from)
     check_currency_available(to)
+
     if date.is_a?(Hash)
       # Backwards compatibility for the opts hash
       date = date[:date]
     end
+
     store.get_rate(::Money::Currency.wrap(from).iso_code, ::Money::Currency.wrap(to).iso_code, date)
   end
 

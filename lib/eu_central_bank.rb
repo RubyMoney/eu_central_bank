@@ -23,6 +23,7 @@ class EuCentralBank < Money::Bank::VariableExchange
   def initialize(*)
     super
     @store.extend Money::RatesStore::EuCentralBankHistoricalDataSupport
+    @currency_string = nil
   end
 
   def update_rates(cache=nil)

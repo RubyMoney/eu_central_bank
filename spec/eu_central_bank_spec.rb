@@ -15,7 +15,7 @@ describe "EuCentralBank" do
 
   after(:each) do
     [@tmp_cache_path, @tmp_history_cache_path].each do |file_name|
-      if File.exists? file_name
+      if File.exist? file_name
         File.delete file_name
       end
     end
@@ -23,12 +23,12 @@ describe "EuCentralBank" do
 
   it "should save the xml file from ecb given a file path" do
     @bank.save_rates(@tmp_cache_path)
-    expect(File.exists?(@tmp_cache_path)).to eq(true)
+    expect(File.exist?(@tmp_cache_path)).to eq(true)
   end
 
   it "should save the xml file from ecb given a file path and url" do
     @bank.save_rates(@tmp_history_cache_path, EuCentralBank::ECB_90_DAY_URL)
-    expect(File.exists?(@tmp_history_cache_path)).to eq(true)
+    expect(File.exist?(@tmp_history_cache_path)).to eq(true)
   end
 
   it "should raise an error if an invalid path is given to save_rates" do
@@ -220,4 +220,3 @@ describe "EuCentralBank" do
     }.not_to raise_error
   end
 end
-

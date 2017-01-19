@@ -1,5 +1,13 @@
 # eu_central_bank changelog
 
+## 1.1.0 (Jan 19 2017)
+
+* Added support for ruby 2.3.0 and 2.4.0
+* Fixed ruby warnings
+* Fixed thread safety issue
+* Fixed issue with historical rates
+* Added exception for currencies not in the list
+
 ## 1.0.1 (May 20 2016)
 
 * Fixed compatibility with recent Money gem

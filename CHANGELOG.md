@@ -1,5 +1,9 @@
 # eu_central_bank changelog
 
+## 1.1.1 (Jan 19 2017)
+
+* Fix nokogiri dependency issue with ruby 2.4.0
+
 ## 1.1.0 (Jan 19 2017)
 
 * Added support for ruby 2.3.0 and 2.4.0

@@ -12,6 +12,12 @@ This gem downloads the exchange rates from the European Central Bank. You can ca
 gem install eu_central_bank
 ```
 
+In case you're using older ruby (< 2.1) you need nokogiri < 1.6.8, so add this to your `Gemfile`:
+
+```
+gem 'nokogiri', '1.6.8'
+```
+
 ## Dependencies
 
 - nokogiri

@@ -20,7 +20,7 @@ module Money::RatesStore
         # locking within the same thread.
         force_sync = false
       end
-      if !force_sync && (@in_transaction || options[:without_mutex])
+      if !@mutex.respond_to?(:synchronize) || (!force_sync && (@in_transaction))
         block.call self
       else
         @mutex.synchronize do

@@ -1,5 +1,10 @@
 # eu_central_bank changelog
 
+## 1.1.3 (Mar 24 2017)
+
+* Fix a bug in #check_currency_available
+* Update money dependency to 6.9.0
+
 ## 1.1.2 (Mar 24 2017)
 
 * Update nokogiri dependency to 1.7.1 to avoid vulnerability

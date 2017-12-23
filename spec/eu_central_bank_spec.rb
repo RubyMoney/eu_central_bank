@@ -234,8 +234,14 @@ describe "EuCentralBank" do
   it "should not fail when calculating rate from historical base rates" do
     @bank.update_historical_rates
 
+    # A very naive way of finding a weekday because exchange rates
+    # from EU Central Bank are not available on weekends
+    workday = Date.today - 7
+    workday -= 1 if workday.saturday?
+    workday -= 2 if workday.sunday?
+
     expect {
-      @bank.exchange(100, 'GBP', 'EUR', Date.today - 7)
+      @bank.exchange(100, 'GBP', 'EUR', workday)
     }.not_to raise_error
   end
 end

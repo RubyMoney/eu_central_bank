@@ -1,5 +1,9 @@
 # eu_central_bank changelog
 
+## 1.2.0 (Dec 29 2017)
+
+* Bump money dependency to 6.10.1
+
 ## 1.1.3 (Mar 24 2017)
 
 * Fix a bug in #check_currency_available

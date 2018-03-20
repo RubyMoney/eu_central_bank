@@ -47,7 +47,7 @@ Money.us_dollar(100).exchange_to("CAD")  # Money.new(124, "CAD")
 eu_bank.exchange_with(Money.new(100, "CAD"), "USD") # Money.new(80, "USD")
 ```
 
-For performance reasons, you may prefer to read from a file instead. Furthermore, ECB publishes their rates daily. It makes sense to save the rates in a file to read from. It also adds an __update_at__ field so that you can manage the update.
+For performance reasons, you may prefer to read from a file instead. Furthermore, ECB publishes their rates daily. It makes sense to save the rates in a file to read from. It also adds an `updated_at` field so that you can manage the update.
 
 ``` ruby
 # cached location

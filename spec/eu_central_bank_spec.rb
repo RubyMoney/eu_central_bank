@@ -244,4 +244,10 @@ describe "EuCentralBank" do
       @bank.exchange(100, 'GBP', 'EUR', workday)
     }.not_to raise_error
   end
+
+	it "should accept a different store" do
+		store = double
+		bank = EuCentralBank.new(store)
+    expect(bank.store).to eq store
+	end
 end

@@ -63,6 +63,14 @@ class EuCentralBank < Money::Bank::VariableExchange
         from_base_rate = get_rate("EUR", from.currency.to_s, date)
         to_base_rate = get_rate("EUR", to_currency, date)
       end
+
+      unless from_base_rate && to_base_rate
+        message = "No conversion rate known for '#{from.currency.iso_code}' -> '#{to_currency}'"
+        message << " on #{date.to_s}" if date
+
+        raise Money::Bank::UnknownRate, message
+      end
+
       rate = to_base_rate / from_base_rate
     end
 
@@ -149,7 +157,7 @@ class EuCentralBank < Money::Bank::VariableExchange
     currency_string = currency.to_s
     return true if currency_string == "EUR"
     return true if CURRENCIES.include?(currency_string)
-    raise CurrencyUnavailable, "No rates available for #{@currency_string}"
+    raise CurrencyUnavailable, "No rates available for #{currency_string}"
   end
 
   protected

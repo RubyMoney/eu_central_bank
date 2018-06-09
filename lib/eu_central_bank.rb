@@ -1,7 +1,7 @@
 require 'open-uri'
 require 'nokogiri'
 require 'money'
-require 'money/rates_store/eu_central_bank_historical_data_support'
+require 'money/rates_store/store_with_historical_data_support'
 
 class InvalidCache < StandardError ; end
 
@@ -20,9 +20,8 @@ class EuCentralBank < Money::Bank::VariableExchange
   ECB_RATES_URL = 'http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml'.freeze
   ECB_90_DAY_URL = 'http://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist-90d.xml'.freeze
 
-  def initialize(*)
+  def initialize(st = Money::RatesStore::StoreWithHistoricalDataSupport.new, &block)
     super
-    @store.extend Money::RatesStore::EuCentralBankHistoricalDataSupport
     @currency_string = nil
   end
 

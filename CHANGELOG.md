@@ -1,5 +1,11 @@
 # eu_central_bank changelog
 
+## 1.3.0 (Jun 12 2018)
+
+* Add configurable rates store
+* Add support for Icelandic Krona (ISK)
+* Bump money dependency to 6.11
+
 ## 1.2.0 (Dec 29 2017)
 
 * Bump money dependency to 6.10.1

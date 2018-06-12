@@ -152,7 +152,7 @@ describe "EuCentralBank" do
 
     EuCentralBank::CURRENCIES.each do |currency|
       subunit_to_unit  = Money::Currency.wrap(currency).subunit_to_unit
-      exchanged_amount = @bank.exchange(100, "EUR", currency, "2014-05-06")
+      exchanged_amount = @bank.exchange(100, "EUR", currency, "2018-05-11")
       expect(exchanged_amount.cents).to eq((historical_exchange_rates["currencies"][currency] * subunit_to_unit).round(0).to_i)
     end
   end

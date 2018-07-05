@@ -19,6 +19,7 @@ class EuCentralBank < Money::Bank::VariableExchange
   CURRENCIES = %w(USD JPY BGN CZK DKK GBP HUF ILS ISK PLN RON SEK CHF NOK HRK RUB TRY AUD BRL CAD CNY HKD IDR INR KRW MXN MYR NZD PHP SGD THB ZAR).map(&:freeze).freeze
   ECB_RATES_URL = 'https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml'.freeze
   ECB_90_DAY_URL = 'https://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist-90d.xml'.freeze
+  ECB_ALL_HIST_URL = 'http://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist.xml'.freeze
 
   def initialize(st = Money::RatesStore::StoreWithHistoricalDataSupport.new, &block)
     super
@@ -29,8 +30,9 @@ class EuCentralBank < Money::Bank::VariableExchange
     update_parsed_rates(doc(cache))
   end
 
-  def update_historical_rates(cache=nil)
-    update_parsed_historical_rates(doc(cache, ECB_90_DAY_URL))
+  def update_historical_rates(cache=nil, all=false)
+    url = all ? ECB_ALL_HIST_URL : ECB_90_DAY_URL
+    update_parsed_historical_rates(doc(cache, url))
   end
 
   def save_rates(cache, url=ECB_RATES_URL)
@@ -39,6 +41,11 @@ class EuCentralBank < Money::Bank::VariableExchange
       io = open_url(url);
       io.each_line { |line| file.puts line }
     end
+  end
+
+  def save_historical_rates(cache, all=false)
+    url = all ? ECB_ALL_HIST_URL : ECB_90_DAY_URL
+    save_rates(cache, url)
   end
 
   def update_rates_from_s(content)

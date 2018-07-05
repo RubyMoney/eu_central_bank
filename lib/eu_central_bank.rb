@@ -21,6 +21,8 @@ class EuCentralBank < Money::Bank::VariableExchange
   ECB_90_DAY_URL = 'https://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist-90d.xml'.freeze
   ECB_ALL_HIST_URL = 'http://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist.xml'.freeze
 
+  LEGACY_CURRENCIES = %w(CYP SIT ROL TRL)
+
   def initialize(st = Money::RatesStore::StoreWithHistoricalDataSupport.new, &block)
     super
     @currency_string = nil
@@ -38,7 +40,7 @@ class EuCentralBank < Money::Bank::VariableExchange
   def save_rates(cache, url=ECB_RATES_URL)
     raise InvalidCache unless cache
     File.open(cache, "w") do |file|
-      io = open_url(url);
+      io = open_url(url)
       io.each_line { |line| file.puts line }
     end
   end
@@ -205,6 +207,7 @@ class EuCentralBank < Money::Bank::VariableExchange
       rates.each do |exchange_rate|
         rate = BigDecimal(exchange_rate.attribute("rate").value, DECIMAL_PRECISION)
         currency = exchange_rate.attribute("currency").value
+        next if LEGACY_CURRENCIES.include?(currency)
         date = exchange_rate.parent.attribute("time").value
         set_rate("EUR", currency, rate, date)
       end

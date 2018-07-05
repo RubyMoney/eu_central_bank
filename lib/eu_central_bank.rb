@@ -7,6 +7,32 @@ class InvalidCache < StandardError ; end
 
 class CurrencyUnavailable < StandardError; end
 
+class RatesDocument < Nokogiri::XML::SAX::Document
+  attr_reader :rates
+  attr_reader :updated_at
+
+  def initialize
+    @rates = {}
+    @updated_at = nil
+    @current_date = nil
+  end
+
+  def start_element(name, attributes=[])
+    return if name != 'Cube' || attributes.empty?
+    first_name, first_value = attributes[0]
+    case first_name
+    when 'time'
+      @current_date = Time.parse(first_value)
+      @updated_at ||= @current_date
+      @rates[@current_date] = []
+    when 'currency'
+      currency = first_value
+      _, rate = attributes[1]
+      @rates[@current_date] << [currency, rate]
+    end
+  end
+end
+
 class EuCentralBank < Money::Bank::VariableExchange
 
   attr_accessor :last_updated
@@ -29,12 +55,12 @@ class EuCentralBank < Money::Bank::VariableExchange
   end
 
   def update_rates(cache=nil)
-    update_parsed_rates(doc(cache))
+    update_parsed_rates(parse_rates(doc(cache)))
   end
 
   def update_historical_rates(cache=nil, all=false)
     url = all ? ECB_ALL_HIST_URL : ECB_90_DAY_URL
-    update_parsed_historical_rates(doc(cache, url))
+    update_parsed_historical_rates(parse_rates(doc(cache, url)))
   end
 
   def save_rates(cache, url=ECB_RATES_URL)
@@ -51,7 +77,7 @@ class EuCentralBank < Money::Bank::VariableExchange
   end
 
   def update_rates_from_s(content)
-    update_parsed_rates(doc_from_s(content))
+    update_parsed_rates(parse_rates(content))
   end
 
   def save_rates_to_s(url=ECB_RATES_URL)
@@ -173,49 +199,39 @@ class EuCentralBank < Money::Bank::VariableExchange
 
   def doc(cache, url=ECB_RATES_URL)
     rates_source = !!cache ? cache : url
-    Nokogiri::XML(open_url(rates_source)).tap { |doc| doc.xpath('gesmes:Envelope/xmlns:Cube/xmlns:Cube//xmlns:Cube') }
-  rescue Nokogiri::XML::XPath::SyntaxError
-    Nokogiri::XML(open_url(url))
+    open(rates_source)
   end
 
-  def doc_from_s(content)
-    Nokogiri::XML(content)
+  def parse_rates(io)
+    d = RatesDocument.new
+    parser = Nokogiri::XML::SAX::Parser.new(d)
+    parser.parse(io)
+    d
   end
 
-  def update_parsed_rates(doc)
-    rates = doc.xpath('gesmes:Envelope/xmlns:Cube/xmlns:Cube//xmlns:Cube')
-
-    store.transaction true do
-      rates.each do |exchange_rate|
-        rate = BigDecimal(exchange_rate.attribute("rate").value, DECIMAL_PRECISION)
-        currency = exchange_rate.attribute("currency").value
-        set_rate("EUR", currency, rate)
+  def copy_rates(rates_document, with_date = false)
+    rates_document.rates.each do |date, rates|
+      rates.each do |currency, rate|
+        next if LEGACY_CURRENCIES.include?(currency)
+        set_rate('EUR', currency, BigDecimal(rate), with_date ? date : nil)
       end
-      set_rate("EUR", "EUR", 1)
+      set_rate('EUR', 'EUR', 1, with_date ? date : nil)
     end
+  end
 
-    rates_updated_at = doc.xpath('gesmes:Envelope/xmlns:Cube/xmlns:Cube/@time').first.value
-    @rates_updated_at = Time.parse(rates_updated_at)
-
+  def update_parsed_rates(rates_document)
+    store.transaction true do
+      copy_rates(rates_document)
+    end
+    @rates_updated_at = rates_document.updated_at
     @last_updated = Time.now
   end
 
-  def update_parsed_historical_rates(doc)
-    rates = doc.xpath('gesmes:Envelope/xmlns:Cube/xmlns:Cube//xmlns:Cube')
-
+  def update_parsed_historical_rates(rates_document)
     store.transaction true do
-      rates.each do |exchange_rate|
-        rate = BigDecimal(exchange_rate.attribute("rate").value, DECIMAL_PRECISION)
-        currency = exchange_rate.attribute("currency").value
-        next if LEGACY_CURRENCIES.include?(currency)
-        date = exchange_rate.parent.attribute("time").value
-        set_rate("EUR", currency, rate, date)
-      end
+      copy_rates(rates_document, true)
     end
-
-    rates_updated_at = doc.xpath('gesmes:Envelope/xmlns:Cube/xmlns:Cube/@time').first.value
-    @historical_rates_updated_at = Time.parse(rates_updated_at)
-
+    @historical_rates_updated_at = rates_document.updated_at
     @historical_last_updated = Time.now
   end
 

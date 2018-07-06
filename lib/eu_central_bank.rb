@@ -19,17 +19,25 @@ class RatesDocument < Nokogiri::XML::SAX::Document
 
   def start_element(name, attributes=[])
     return if name != 'Cube' || attributes.empty?
-    first_name, first_value = attributes[0]
-    case first_name
-    when 'time'
-      @current_date = Time.parse(first_value)
-      @updated_at ||= @current_date
-      @rates[@current_date] = []
-    when 'currency'
-      currency = first_value
-      _, rate = attributes[1]
-      @rates[@current_date] << [currency, rate]
+    begin
+      first_name, first_value = attributes[0]
+      case first_name
+      when 'time'
+        @current_date = Time.parse(first_value).to_date
+        @updated_at ||= @current_date
+        @rates[@current_date] = []
+      when 'currency'
+        currency = first_value
+        _, rate = attributes[1]
+        @rates[@current_date] << [currency, rate]
+      end
+    rescue StandardError => e
+      raise Nokogiri::XML::XPath::SyntaxError, e.message
     end
+  end
+
+  def end_document
+    raise Nokogiri::XML::XPath::SyntaxError if @rates.empty? || @updated_at.nil?
   end
 end
 
@@ -55,12 +63,12 @@ class EuCentralBank < Money::Bank::VariableExchange
   end
 
   def update_rates(cache=nil)
-    update_parsed_rates(parse_rates(doc(cache)))
+    update_parsed_rates(doc(cache))
   end
 
   def update_historical_rates(cache=nil, all=false)
     url = all ? ECB_ALL_HIST_URL : ECB_90_DAY_URL
-    update_parsed_historical_rates(parse_rates(doc(cache, url)))
+    update_parsed_historical_rates(doc(cache, url))
   end
 
   def save_rates(cache, url=ECB_RATES_URL)
@@ -199,7 +207,11 @@ class EuCentralBank < Money::Bank::VariableExchange
 
   def doc(cache, url=ECB_RATES_URL)
     rates_source = !!cache ? cache : url
-    open(rates_source)
+    begin
+      parse_rates(open(rates_source))
+    rescue Nokogiri::XML::XPath::SyntaxError
+      parse_rates(open(url))
+    end
   end
 
   def parse_rates(io)

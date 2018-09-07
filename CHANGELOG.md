@@ -1,5 +1,9 @@
 # eu_central_bank changelog
 
+## 1.3.1 (Sep 6 2018)
+
+* Fix HTTPS redirection error
+
 ## 1.3.0 (Jun 12 2018)
 
 * Add configurable rates store

@@ -53,7 +53,7 @@ class EuCentralBank < Money::Bank::VariableExchange
   CURRENCIES = %w(USD JPY BGN CZK DKK GBP HUF ILS ISK PLN RON SEK CHF NOK HRK RUB TRY AUD BRL CAD CNY HKD IDR INR KRW MXN MYR NZD PHP SGD THB ZAR).map(&:freeze).freeze
   ECB_RATES_URL = 'https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml'.freeze
   ECB_90_DAY_URL = 'https://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist-90d.xml'.freeze
-  ECB_ALL_HIST_URL = 'http://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist.xml'.freeze
+  ECB_ALL_HIST_URL = 'https://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist.xml'.freeze
 
   LEGACY_CURRENCIES = %w(CYP SIT ROL TRL)
 

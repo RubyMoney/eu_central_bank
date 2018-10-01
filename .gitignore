@@ -22,3 +22,6 @@ Gemfile.lock
 ## PROJECT::SPECIFIC
 .rvmrc
 .ruby-gemset
+
+## Rubymine
+.idea

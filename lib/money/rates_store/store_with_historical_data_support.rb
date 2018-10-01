@@ -1,5 +1,5 @@
 module Money::RatesStore
-  module EuCentralBankHistoricalDataSupport
+  class StoreWithHistoricalDataSupport < Money::RatesStore::Memory
     INDEX_DATE_SEPARATOR = '_AT_'.freeze
 
     def add_rate(currency_iso_from, currency_iso_to, rate, date = nil)

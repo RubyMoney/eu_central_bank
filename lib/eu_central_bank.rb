@@ -1,7 +1,7 @@
 require 'open-uri'
 require 'nokogiri'
 require 'money'
-require 'money/rates_store/eu_central_bank_historical_data_support'
+require 'money/rates_store/store_with_historical_data_support'
 
 class InvalidCache < StandardError ; end
 
@@ -16,13 +16,12 @@ class EuCentralBank < Money::Bank::VariableExchange
 
   SERIALIZER_DATE_SEPARATOR = '_AT_'
 
-  CURRENCIES = %w(USD JPY BGN CZK DKK GBP HUF ILS PLN RON SEK CHF NOK HRK RUB TRY AUD BRL CAD CNY HKD IDR INR KRW MXN MYR NZD PHP SGD THB ZAR).map(&:freeze).freeze
-  ECB_RATES_URL = 'http://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml'.freeze
-  ECB_90_DAY_URL = 'http://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist-90d.xml'.freeze
+  CURRENCIES = %w(USD JPY BGN CZK DKK GBP HUF ILS ISK PLN RON SEK CHF NOK HRK RUB TRY AUD BRL CAD CNY HKD IDR INR KRW MXN MYR NZD PHP SGD THB ZAR).map(&:freeze).freeze
+  ECB_RATES_URL = 'https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml'.freeze
+  ECB_90_DAY_URL = 'https://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist-90d.xml'.freeze
 
-  def initialize(*)
+  def initialize(st = Money::RatesStore::StoreWithHistoricalDataSupport.new, &block)
     super
-    @store.extend Money::RatesStore::EuCentralBankHistoricalDataSupport
     @currency_string = nil
   end
 

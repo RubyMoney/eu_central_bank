@@ -152,7 +152,7 @@ describe "EuCentralBank" do
 
     EuCentralBank::CURRENCIES.each do |currency|
       subunit_to_unit  = Money::Currency.wrap(currency).subunit_to_unit
-      exchanged_amount = @bank.exchange(100, "EUR", currency, "2014-05-06")
+      exchanged_amount = @bank.exchange(100, "EUR", currency, "2018-05-11")
       expect(exchanged_amount.cents).to eq((historical_exchange_rates["currencies"][currency] * subunit_to_unit).round(0).to_i)
     end
   end
@@ -244,4 +244,10 @@ describe "EuCentralBank" do
       @bank.exchange(100, 'GBP', 'EUR', workday)
     }.not_to raise_error
   end
+
+	it "should accept a different store" do
+		store = double
+		bank = EuCentralBank.new(store)
+    expect(bank.store).to eq store
+	end
 end

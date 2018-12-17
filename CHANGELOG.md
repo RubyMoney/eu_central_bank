@@ -1,5 +1,10 @@
 # eu_central_bank changelog
 
+## 1.4.0 (Dec 17 2018)
+
+* Update money dependency to 6.13.x
+* Relax money dependency to a minor version
+
 ## 1.3.1 (Sep 6 2018)
 
 * Fix HTTPS redirection error

@@ -2,7 +2,7 @@
 # encoding: utf-8
 Gem::Specification.new do |s|
   s.name         = "eu_central_bank"
-  s.version      = "1.3.1"
+  s.version      = "1.4.0"
   s.platform     = Gem::Platform::RUBY
   s.authors      = ["Shane Emmons"]
   s.email        = ["shane@emmons.io"]

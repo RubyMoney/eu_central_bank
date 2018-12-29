@@ -6,6 +6,6 @@ rvm:
   - 2.1.10
   - 2.2.10
   - 2.3.7
-  - 2.4.0
+  - 2.4.5
   - jruby-9.0.4.0
 script: bundle exec rake spec

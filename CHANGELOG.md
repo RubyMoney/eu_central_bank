@@ -1,5 +1,9 @@
 # eu_central_bank changelog
 
+## 1.4.1 (Jan 14 2019)
+
+* Relax Nokogiri dependency to `~> 1.8` on newer rubies
+
 ## 1.4.0 (Dec 17 2018)
 
 * Update money dependency to 6.13.x

@@ -186,6 +186,34 @@ describe "EuCentralBank" do
     odd_thread.kill
   end
 
+  describe 'export / import rates' do
+    let(:other_bank) { EuCentralBank.new }
+
+    before { @bank.update_rates(@cache_path) }
+
+    it 're-imports JSON' do
+      raw_rates = @bank.export_rates(:json)
+      other_bank.import_rates(:json, raw_rates)
+
+      expect(@bank.store.send(:index)).to eq(other_bank.store.send(:index))
+    end
+
+    it 're-imports Marshalled ruby' do
+      raw_rates = @bank.export_rates(:ruby)
+      other_bank.import_rates(:ruby, raw_rates)
+
+      expect(@bank.store.send(:index)).to eq(other_bank.store.send(:index))
+    end
+
+    it 're-imports YAML' do
+      raw_rates = @bank.export_rates(:yaml)
+      other_bank.import_rates(:yaml, raw_rates)
+
+      expect(@bank.store.send(:index)).to eq(other_bank.store.send(:index))
+    end
+  end
+
+
   it "should exchange money atomically" do
     # NOTE: We need to introduce an artificial delay in the core get_rate
     # function, otherwise it will take a lot of iterations to hit some sort or

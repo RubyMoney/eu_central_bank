@@ -145,7 +145,8 @@ class EuCentralBank < Money::Bank::VariableExchange
       data.each do |key, rate|
         from, to = key.split(SERIALIZER_SEPARATOR)
         to, date = to.split(SERIALIZER_DATE_SEPARATOR)
-        store.add_rate from, to, rate, date
+
+        store.add_rate from, to, BigDecimal(rate), date
       end
     end
 

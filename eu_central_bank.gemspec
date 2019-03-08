@@ -9,6 +9,7 @@ Gem::Specification.new do |s|
   s.homepage     = "https://github.com/RubyMoney/eu_central_bank"
   s.summary      = "Calculates exchange rates based on rates from european central bank. Money gem compatible."
   s.description  = "This gem reads exchange rates from the european central bank website. It uses it to calculates exchange rates. It is compatible with the money gem"
+  s.license      = "MIT"
 
   s.add_dependency "nokogiri", RUBY_VERSION >= "2.1" ? "~> 1.8" : "~> 1.6.8"
   s.add_dependency "money", "~> 6.13"

@@ -9,12 +9,19 @@ class CurrencyUnavailable < StandardError; end
 
 class RatesDocument < Nokogiri::XML::SAX::Document
   attr_reader :rates
+  attr_reader :errors
   attr_reader :updated_at
 
   def initialize
     @rates = {}
+    @errors = []
     @updated_at = nil
     @current_date = nil
+  end
+
+  def error(msg)
+    @errors << msg
+    super
   end
 
   def start_element(name, attributes=[])
@@ -215,10 +222,20 @@ class EuCentralBank < Money::Bank::VariableExchange
   end
 
   def parse_rates(io)
-    d = RatesDocument.new
-    parser = Nokogiri::XML::SAX::Parser.new(d)
+    doc = RatesDocument.new
+    parser = Nokogiri::XML::SAX::Parser.new(doc)
     parser.parse(io)
-    d
+
+    unless doc.errors.empty?
+      # Temporary workaround for jruby until
+      # https://github.com/sparklemotion/nokogiri/pull/1872 gets
+      # released and we bump nokogiri version to include it.
+      # TLDR: jruby version of SAX parser will mask all the exceptions
+      # raised in document so we will raise it here if there were errors.
+      raise Nokogiri::XML::XPath::SyntaxError, doc.errors.join("\n")
+    end
+
+    doc
   end
 
   def copy_rates(rates_document, with_date = false)

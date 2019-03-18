@@ -12,6 +12,9 @@ module ECB
     end
 
     def error(msg)
+      # TODO: remove this workaround after
+      # https://github.com/sparklemotion/nokogiri/pull/1872
+      # is released
       @errors << msg
       super
     end

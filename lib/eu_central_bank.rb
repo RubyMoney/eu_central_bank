@@ -1,52 +1,12 @@
 require 'open-uri'
 require 'nokogiri'
+require 'ecb/rates_document'
 require 'money'
 require 'money/rates_store/store_with_historical_data_support'
 
 class InvalidCache < StandardError ; end
 
 class CurrencyUnavailable < StandardError; end
-
-class RatesDocument < Nokogiri::XML::SAX::Document
-  attr_reader :rates
-  attr_reader :errors
-  attr_reader :updated_at
-
-  def initialize
-    @rates = {}
-    @errors = []
-    @updated_at = nil
-    @current_date = nil
-  end
-
-  def error(msg)
-    @errors << msg
-    super
-  end
-
-  def start_element(name, attributes=[])
-    return if name != 'Cube' || attributes.empty?
-    begin
-      first_name, first_value = attributes[0]
-      case first_name
-      when 'time'
-        @current_date = Time.parse(first_value).to_date
-        @updated_at ||= @current_date
-        @rates[@current_date] = []
-      when 'currency'
-        currency = first_value
-        _, rate = attributes[1]
-        @rates[@current_date] << [currency, rate]
-      end
-    rescue StandardError => e
-      raise Nokogiri::XML::XPath::SyntaxError, e.message
-    end
-  end
-
-  def end_document
-    raise Nokogiri::XML::XPath::SyntaxError if @rates.empty? || @updated_at.nil?
-  end
-end
 
 class EuCentralBank < Money::Bank::VariableExchange
 
@@ -222,7 +182,7 @@ class EuCentralBank < Money::Bank::VariableExchange
   end
 
   def parse_rates(io)
-    doc = RatesDocument.new
+    doc = ECB::RatesDocument.new
     parser = Nokogiri::XML::SAX::Parser.new(doc)
     parser.parse(io)
 

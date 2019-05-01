@@ -273,9 +273,9 @@ describe "EuCentralBank" do
     }.not_to raise_error
   end
 
-	it "should accept a different store" do
-		store = double
-		bank = EuCentralBank.new(store)
+  it "should accept a different store" do
+    store = double
+    bank = EuCentralBank.new(store)
     expect(bank.store).to eq store
-	end
+  end
 end

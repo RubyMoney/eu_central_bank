@@ -1,4 +1,5 @@
 language: ruby
+dist: trusty
 sudo: false
 rvm:
   - 1.9.3

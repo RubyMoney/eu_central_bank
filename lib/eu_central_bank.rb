@@ -15,7 +15,7 @@ class EuCentralBank < Money::Bank::VariableExchange
   attr_accessor :historical_rates_updated_at
 
   SERIALIZER_DATE_SEPARATOR = '_AT_'
-
+  DECIMAL_PRECISION = 5
   CURRENCIES = %w(USD JPY BGN CZK DKK GBP HUF ILS ISK PLN RON SEK CHF NOK HRK RUB TRY AUD BRL CAD CNY HKD IDR INR KRW MXN MYR NZD PHP SGD THB ZAR).map(&:freeze).freeze
   ECB_RATES_URL = 'https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml'.freeze
   ECB_90_DAY_URL = 'https://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist-90d.xml'.freeze
@@ -146,7 +146,7 @@ class EuCentralBank < Money::Bank::VariableExchange
         from, to = key.split(SERIALIZER_SEPARATOR)
         to, date = to.split(SERIALIZER_DATE_SEPARATOR)
 
-        store.add_rate from, to, BigDecimal(rate), date
+        store.add_rate from, to, BigDecimal(rate, DECIMAL_PRECISION), date
       end
     end
 
@@ -178,7 +178,7 @@ class EuCentralBank < Money::Bank::VariableExchange
 
     store.transaction true do
       rates.each do |exchange_rate|
-        rate = BigDecimal(exchange_rate.attribute("rate").value)
+        rate = BigDecimal(exchange_rate.attribute("rate").value, DECIMAL_PRECISION)
         currency = exchange_rate.attribute("currency").value
         set_rate("EUR", currency, rate)
       end
@@ -196,7 +196,7 @@ class EuCentralBank < Money::Bank::VariableExchange
 
     store.transaction true do
       rates.each do |exchange_rate|
-        rate = BigDecimal(exchange_rate.attribute("rate").value)
+        rate = BigDecimal(exchange_rate.attribute("rate").value, DECIMAL_PRECISION)
         currency = exchange_rate.attribute("currency").value
         date = exchange_rate.parent.attribute("time").value
         set_rate("EUR", currency, rate, date)
@@ -214,7 +214,7 @@ class EuCentralBank < Money::Bank::VariableExchange
   def calculate_exchange(from, to_currency, rate)
     to_currency_money = Money::Currency.wrap(to_currency).subunit_to_unit
     from_currency_money = from.currency.subunit_to_unit
-    decimal_money = BigDecimal(to_currency_money) / BigDecimal(from_currency_money)
+    decimal_money = BigDecimal(to_currency_money, DECIMAL_PRECISION) / BigDecimal(from_currency_money, DECIMAL_PRECISION)
     money = (decimal_money * from.cents * rate).round
     Money.new(money, to_currency)
   end

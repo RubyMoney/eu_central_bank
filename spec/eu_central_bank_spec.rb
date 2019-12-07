@@ -195,21 +195,21 @@ describe "EuCentralBank" do
       raw_rates = @bank.export_rates(:json)
       other_bank.import_rates(:json, raw_rates)
 
-      expect(@bank.store.send(:index)).to eq(other_bank.store.send(:index))
+      expect(@bank.store.send(:rates)).to eq(other_bank.store.send(:rates))
     end
 
     it 're-imports Marshalled ruby' do
       raw_rates = @bank.export_rates(:ruby)
       other_bank.import_rates(:ruby, raw_rates)
 
-      expect(@bank.store.send(:index)).to eq(other_bank.store.send(:index))
+      expect(@bank.store.send(:rates)).to eq(other_bank.store.send(:rates))
     end
 
     it 're-imports YAML' do
       raw_rates = @bank.export_rates(:yaml)
       other_bank.import_rates(:yaml, raw_rates)
 
-      expect(@bank.store.send(:index)).to eq(other_bank.store.send(:index))
+      expect(@bank.store.send(:rates)).to eq(other_bank.store.send(:rates))
     end
   end
 

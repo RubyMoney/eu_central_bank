@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.license      = "MIT"
 
   s.add_dependency "nokogiri", RUBY_VERSION >= "2.1" ? "~> 1.9" : "~> 1.6.8"
-  s.add_dependency "money", "~> 6.13"
+  s.add_dependency "money", "~> 6.13", ">= 6.13.6"
 
   s.add_development_dependency "rspec", "~> 3.5.0"
 

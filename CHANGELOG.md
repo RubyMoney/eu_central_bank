@@ -1,5 +1,11 @@
 # eu_central_bank changelog
 
+## 1.5.0 (Dec 7 2019)
+
+* Fix issue with money gem incompatibility
+* Fix thread safety of the default rates store
+* Bump money dependency to >= 6.13.6
+
 ## 1.4.2 (Feb 2 2019)
 
 * Fix issue with importing exported rates

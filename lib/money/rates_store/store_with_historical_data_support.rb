@@ -12,7 +12,7 @@ module Money::RatesStore
 
     # Wraps block execution in a thread-safe transaction
     def transaction(_force_sync = false, &block)
-      super &block
+      super(&block)
     end
 
     # Iterate over rate tuples (iso_from, iso_to, rate)

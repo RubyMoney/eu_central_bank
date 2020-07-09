@@ -202,7 +202,7 @@ class EuCentralBank < Money::Bank::VariableExchange
     rates_document.rates.each do |date, rates|
       rates.each do |currency, rate|
         next if LEGACY_CURRENCIES.include?(currency)
-        set_rate('EUR', currency, BigDecimal(rate), with_date ? date : nil)
+        set_rate('EUR', currency, BigDecimal(rate, DECIMAL_PRECISION), with_date ? date : nil)
       end
       set_rate('EUR', 'EUR', 1, with_date ? date : nil)
     end

@@ -1,8 +1,8 @@
 require 'open-uri'
 require 'nokogiri'
-require 'ecb/rates_document'
 require 'money'
 require 'money/rates_store/store_with_historical_data_support'
+require 'eu_central_bank/rates_document'
 
 class InvalidCache < StandardError ; end
 
@@ -182,7 +182,7 @@ class EuCentralBank < Money::Bank::VariableExchange
   end
 
   def parse_rates(io)
-    doc = ECB::RatesDocument.new
+    doc = ::EuCentralBank::RatesDocument.new
     parser = Nokogiri::XML::SAX::Parser.new(doc)
     parser.parse(io)
 

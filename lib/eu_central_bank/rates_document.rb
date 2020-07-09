@@ -1,4 +1,4 @@
-module ECB
+class EuCentralBank < Money::Bank::VariableExchange
   class RatesDocument < Nokogiri::XML::SAX::Document
     attr_reader :rates
     attr_reader :errors

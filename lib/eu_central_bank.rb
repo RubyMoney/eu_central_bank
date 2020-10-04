@@ -3,7 +3,7 @@ require 'nokogiri'
 require 'money'
 require 'money/rates_store/store_with_historical_data_support'
 
-class InvalidCache < StandardError ; end
+class InvalidCache < StandardError; end
 
 class CurrencyUnavailable < StandardError; end
 
@@ -25,15 +25,15 @@ class EuCentralBank < Money::Bank::VariableExchange
     @currency_string = nil
   end
 
-  def update_rates(cache=nil)
+  def update_rates(cache = nil)
     update_parsed_rates(doc(cache))
   end
 
-  def update_historical_rates(cache=nil)
+  def update_historical_rates(cache = nil)
     update_parsed_historical_rates(doc(cache, ECB_90_DAY_URL))
   end
 
-  def save_rates(cache, url=ECB_RATES_URL)
+  def save_rates(cache, url = ECB_RATES_URL)
     raise InvalidCache unless cache
     File.open(cache, "w") do |file|
       io = open_url(url);
@@ -45,15 +45,15 @@ class EuCentralBank < Money::Bank::VariableExchange
     update_parsed_rates(doc_from_s(content))
   end
 
-  def save_rates_to_s(url=ECB_RATES_URL)
+  def save_rates_to_s(url = ECB_RATES_URL)
     open_url(url).read
   end
 
-  def exchange(cents, from_currency, to_currency, date=nil)
-    exchange_with(Money.new(cents, from_currency), to_currency, date)
+  def exchange(cents, from_currency, to_currency, round_number = 0, date = nil)
+    exchange_with(Money.new(cents, from_currency), to_currency, round_number, date)
   end
 
-  def exchange_with(from, to_currency, date=nil)
+  def exchange_with(from, to_currency, round_number = 0, date = nil)
     from_base_rate, to_base_rate = nil, nil
     rate = get_rate(from.currency, to_currency, date)
 
@@ -73,7 +73,7 @@ class EuCentralBank < Money::Bank::VariableExchange
       rate = to_base_rate / from_base_rate
     end
 
-    calculate_exchange(from, to_currency, rate)
+    calculate_exchange(from, to_currency, rate, round_number)
   end
 
   def get_rate(from, to, date = nil)
@@ -162,7 +162,7 @@ class EuCentralBank < Money::Bank::VariableExchange
 
   protected
 
-  def doc(cache, url=ECB_RATES_URL)
+  def doc(cache, url = ECB_RATES_URL)
     rates_source = !!cache ? cache : url
     Nokogiri::XML(open_url(rates_source)).tap { |doc| doc.xpath('gesmes:Envelope/xmlns:Cube/xmlns:Cube//xmlns:Cube') }
   rescue Nokogiri::XML::XPath::SyntaxError
@@ -211,11 +211,11 @@ class EuCentralBank < Money::Bank::VariableExchange
 
   private
 
-  def calculate_exchange(from, to_currency, rate)
+  def calculate_exchange(from, to_currency, rate, round_number)
     to_currency_money = Money::Currency.wrap(to_currency).subunit_to_unit
     from_currency_money = from.currency.subunit_to_unit
     decimal_money = BigDecimal(to_currency_money, DECIMAL_PRECISION) / BigDecimal(from_currency_money, DECIMAL_PRECISION)
-    money = (decimal_money * from.cents * rate).round
+    money = (decimal_money * from.cents * rate).round(round_number)
     Money.new(money, to_currency)
   end
 

@@ -25,8 +25,8 @@ class EuCentralBank < Money::Bank::VariableExchange
     @currency_string = nil
   end
 
-  def update_rates(cache=nil)
-    update_parsed_rates(doc(cache))
+  def update_rates(cache=nil, url=ECB_RATES_URL)
+    update_parsed_rates(doc(cache, url))
   end
 
   def update_historical_rates(cache=nil)

@@ -25,7 +25,7 @@ gem 'nokogiri', '1.6.8'
 
 ## Usage
 
-With the gem, you do not need to manually add exchange rates. Calling update_rates will download the rates from the European Central Bank. The API is the same as the money gem. Feel free to use Money objects with the bank.
+With the gem, you do not need to manually add exchange rates. Calling `update_rates` will download the rates from the European Central Bank. The API is the same as the money gem. Feel free to use Money objects with the bank.
 
 ``` ruby
 require 'eu_central_bank'

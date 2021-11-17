@@ -1,5 +1,9 @@
 # eu_central_bank changelog
 
+## 1.7.0 (Nov 17 2021)
+
+* Support historical rates
+
 ## 1.6.1 (Mar 3 2021)
 
 * Allow a fallback when loading cached rate files to inhibit network fetch. 

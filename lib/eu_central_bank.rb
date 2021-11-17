@@ -2,6 +2,7 @@ require 'open-uri'
 require 'nokogiri'
 require 'money'
 require 'money/rates_store/store_with_historical_data_support'
+require 'eu_central_bank/rates_document'
 
 class InvalidCache < StandardError ; end
 
@@ -19,6 +20,9 @@ class EuCentralBank < Money::Bank::VariableExchange
   CURRENCIES = %w(USD JPY BGN CZK DKK GBP HUF ILS ISK PLN RON SEK CHF NOK HRK RUB TRY AUD BRL CAD CNY HKD IDR INR KRW MXN MYR NZD PHP SGD THB ZAR).map(&:freeze).freeze
   ECB_RATES_URL = 'https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml'.freeze
   ECB_90_DAY_URL = 'https://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist-90d.xml'.freeze
+  ECB_ALL_HIST_URL = 'https://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist.xml'.freeze
+
+  LEGACY_CURRENCIES = %w(CYP SIT ROL TRL)
 
   def initialize(st = Money::RatesStore::StoreWithHistoricalDataSupport.new, &block)
     super
@@ -29,20 +33,26 @@ class EuCentralBank < Money::Bank::VariableExchange
     update_parsed_rates(doc(cache, url))
   end
 
-  def update_historical_rates(cache=nil)
-    update_parsed_historical_rates(doc(cache, ECB_90_DAY_URL))
+  def update_historical_rates(cache=nil, all=false)
+    url = all ? ECB_ALL_HIST_URL : ECB_90_DAY_URL
+    update_parsed_historical_rates(doc(cache, url))
   end
 
   def save_rates(cache, url=ECB_RATES_URL)
     raise InvalidCache unless cache
     File.open(cache, "w") do |file|
-      io = open_url(url);
+      io = open_url(url)
       io.each_line { |line| file.puts line }
     end
   end
 
+  def save_historical_rates(cache, all=false)
+    url = all ? ECB_ALL_HIST_URL : ECB_90_DAY_URL
+    save_rates(cache, url)
+  end
+
   def update_rates_from_s(content)
-    update_parsed_rates(doc_from_s(content))
+    update_parsed_rates(parse_rates(content))
   end
 
   def save_rates_to_s(url=ECB_RATES_URL)
@@ -164,48 +174,53 @@ class EuCentralBank < Money::Bank::VariableExchange
 
   def doc(cache, url=ECB_RATES_URL)
     rates_source = !!cache ? cache : url
-    Nokogiri::XML(open_url(rates_source)).tap { |doc| doc.xpath('gesmes:Envelope/xmlns:Cube/xmlns:Cube//xmlns:Cube') }
-  rescue Nokogiri::XML::XPath::SyntaxError
-    Nokogiri::XML(open_url(url))
+    begin
+      parse_rates(open_url(rates_source))
+    rescue Nokogiri::XML::XPath::SyntaxError
+      parse_rates(open_url(url))
+    end
   end
 
-  def doc_from_s(content)
-    Nokogiri::XML(content)
-  end
+  def parse_rates(io)
+    doc = ::EuCentralBank::RatesDocument.new
+    parser = Nokogiri::XML::SAX::Parser.new(doc)
+    parser.parse(io)
 
-  def update_parsed_rates(doc)
-    rates = doc.xpath('gesmes:Envelope/xmlns:Cube/xmlns:Cube//xmlns:Cube')
-
-    store.transaction true do
-      rates.each do |exchange_rate|
-        rate = BigDecimal(exchange_rate.attribute("rate").value, DECIMAL_PRECISION)
-        currency = exchange_rate.attribute("currency").value
-        set_rate("EUR", currency, rate)
-      end
-      set_rate("EUR", "EUR", 1)
+    unless doc.errors.empty?
+      # Temporary workaround for jruby until
+      # https://github.com/sparklemotion/nokogiri/pull/1872 gets
+      # released and we bump nokogiri version to include it.
+      # TLDR: jruby version of SAX parser will mask all the exceptions
+      # raised in document so we will raise it here if there were errors.
+      raise Nokogiri::XML::XPath::SyntaxError, doc.errors.join("\n")
     end
 
-    rates_updated_at = doc.xpath('gesmes:Envelope/xmlns:Cube/xmlns:Cube/@time').first.value
-    @rates_updated_at = Time.parse(rates_updated_at)
+    doc
+  end
 
+  def copy_rates(rates_document, with_date = false)
+    rates_document.rates.each do |date, rates|
+      rates.each do |currency, rate|
+        next if LEGACY_CURRENCIES.include?(currency)
+        set_rate('EUR', currency, BigDecimal(rate, DECIMAL_PRECISION), with_date ? date : nil)
+      end
+      set_rate('EUR', 'EUR', 1, with_date ? date : nil)
+    end
+  end
+
+  def update_parsed_rates(rates_document)
+    store.transaction true do
+      copy_rates(rates_document)
+    end
+    @rates_updated_at = rates_document.updated_at
     @last_updated = Time.now
   end
 
-  def update_parsed_historical_rates(doc)
-    rates = doc.xpath('gesmes:Envelope/xmlns:Cube/xmlns:Cube//xmlns:Cube')
-
+  def update_parsed_historical_rates(rates_document)
     store.transaction true do
-      rates.each do |exchange_rate|
-        rate = BigDecimal(exchange_rate.attribute("rate").value, DECIMAL_PRECISION)
-        currency = exchange_rate.attribute("currency").value
-        date = exchange_rate.parent.attribute("time").value
-        set_rate("EUR", currency, rate, date)
-      end
+      copy_rates(rates_document, true)
     end
-
-    rates_updated_at = doc.xpath('gesmes:Envelope/xmlns:Cube/xmlns:Cube/@time').first.value
-    @historical_rates_updated_at = Time.parse(rates_updated_at)
-
+    @historical_rates_updated_at = rates_document.updated_at
     @historical_last_updated = Time.now
   end
 

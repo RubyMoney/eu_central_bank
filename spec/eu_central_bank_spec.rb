@@ -9,15 +9,14 @@ describe "EuCentralBank" do
     @history_cache_path = File.expand_path(@dir_path + '/exchange_rates_90_day.xml')
     @tmp_cache_path = File.expand_path(@dir_path + '/tmp/exchange_rates.xml')
     @tmp_history_cache_path = File.expand_path(@dir_path + '/tmp/exchange_rates_90_day.xml')
+    @tmp_full_history_cache_path = File.expand_path(@dir_path + '/tmp/exchange_rates_all.xml')
     yml_cache_path = File.expand_path(@dir_path + '/exchange_rates.yml')
     @exchange_rates = YAML.load_file(yml_cache_path)
   end
 
   after(:each) do
-    [@tmp_cache_path, @tmp_history_cache_path].each do |file_name|
-      if File.exist? file_name
-        File.delete file_name
-      end
+    [@tmp_cache_path, @tmp_history_cache_path, @tmp_full_history_cache_path].each do |file_name|
+      File.delete file_name if File.exist? file_name
     end
   end
 
@@ -277,5 +276,80 @@ describe "EuCentralBank" do
     store = double
     bank = EuCentralBank.new(store)
     expect(bank.store).to eq store
+  end
+
+  describe '#save_historical_rates' do
+    subject { @bank.save_historical_rates(cache_file, full) }
+
+    let(:mock_response) { StringIO.new('mocked_response_from_ECB') }
+
+    context 'when full history is not requested' do
+      let(:full) { false }
+      let(:cache_file) { @tmp_history_cache_path }
+
+      before do
+        expect(OpenURI).to receive(:open_uri).
+          with(URI(EuCentralBank::ECB_90_DAY_URL)).and_return(mock_response)
+      end
+
+      it 'fetches saves rates for last 90 days' do
+        subject
+
+        expect(File.read(@tmp_history_cache_path)).
+          to eq("mocked_response_from_ECB\n")
+      end
+    end
+
+    context 'when full history is requested' do
+      let(:full) { true }
+      let(:cache_file) { @tmp_full_history_cache_path }
+
+      before do
+        expect(OpenURI).to receive(:open_uri).
+          with(URI(EuCentralBank::ECB_ALL_HIST_URL)).and_return(mock_response)
+      end
+
+      it 'fetches saves full rates history' do
+        subject
+
+        expect(File.read(@tmp_full_history_cache_path)).
+          to eq("mocked_response_from_ECB\n")
+      end
+    end
+  end
+
+  describe '#update_historical_rates' do
+    subject { @bank.update_historical_rates(nil, full) }
+
+    before do
+      expect(OpenURI).to receive(:open_uri).
+        with(history_uri).and_return(open(@history_cache_path))
+    end
+
+    context 'when full history is requested' do
+      let(:full) { true }
+      let(:history_uri) { URI(EuCentralBank::ECB_ALL_HIST_URL) }
+
+      it 'fetches full rates history from ECB' do
+        subject
+
+        EuCentralBank::CURRENCIES.each do |currency|
+          expect(@bank.get_rate("EUR", currency, '2018-05-23')).to be > 0
+        end
+      end
+    end
+
+    context 'when full history is not requested' do
+      let(:full) { false }
+      let(:history_uri) { URI(EuCentralBank::ECB_90_DAY_URL) }
+
+      it 'fetches 90 days rates history from ECB' do
+        subject
+
+        EuCentralBank::CURRENCIES.each do |currency|
+          expect(@bank.get_rate("EUR", currency, '2018-05-23')).to be > 0
+        end
+      end
+    end
   end
 end

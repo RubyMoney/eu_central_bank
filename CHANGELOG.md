@@ -1,5 +1,9 @@
 # eu_central_bank changelog
 
+## 1.6.1 (Mar 3 2021)
+
+* Allow a fallback when loading cached rate files to inhibit network fetch. 
+
 ## 1.5.0 (Dec 7 2019)
 
 * Fix issue with money gem incompatibility

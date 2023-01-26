@@ -149,7 +149,11 @@ class EuCentralBank < Money::Bank::VariableExchange
        when :ruby
          Marshal.load(s)
        when :yaml
-         YAML.load(s)
+         if Gem::Version.new(Psych::VERSION) >= Gem::Version.new('3.1.0')
+           YAML.safe_load(s, permitted_classes: [ BigDecimal ])
+         else
+           YAML.safe_load(s, [ BigDecimal ], [], true)
+         end
        end
 
       data.each do |key, rate|

@@ -1,5 +1,4 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
-require 'yaml'
 
 describe "EuCentralBank" do
   before(:each) do
@@ -11,7 +10,7 @@ describe "EuCentralBank" do
     @tmp_history_cache_path = File.expand_path(@dir_path + '/tmp/exchange_rates_90_day.xml')
     @tmp_full_history_cache_path = File.expand_path(@dir_path + '/tmp/exchange_rates_all.xml')
     yml_cache_path = File.expand_path(@dir_path + '/exchange_rates.yml')
-    @exchange_rates = YAML.load_file(yml_cache_path)
+    @exchange_rates = load_exchange_rates_from_file(yml_cache_path)
   end
 
   after(:each) do
@@ -146,7 +145,7 @@ describe "EuCentralBank" do
 
   it "should return the correct exchange rates using historical exchange" do
     yml_path = File.expand_path(File.dirname(__FILE__) + '/historical_exchange_rates.yml')
-    historical_exchange_rates = YAML.load_file(yml_path)
+    historical_exchange_rates = load_exchange_rates_from_file(yml_path)
     @bank.update_historical_rates(@history_cache_path)
 
     EuCentralBank::CURRENCIES.each do |currency|
@@ -173,7 +172,7 @@ describe "EuCentralBank" do
     @bank.update_rates(odd_rates)
 
     10.times do
-      rates = YAML.load(@bank.export_rates(:yaml))
+      rates = load_exchange_rates(@bank.export_rates(:yaml))
       rates.delete('EUR_TO_EUR')
       rates = rates.values.collect(&:to_i)
       expect(rates.length).to eq(32)

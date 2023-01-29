@@ -1,5 +1,6 @@
 # eu_central_bank changelog
 
+* Update YAML loading from compatibility with recent Psych versions.
 * Move Croatian Kuna (HRK) and Russian Ruble (RUB) to legacy currencies
 
 ## 1.7.0 (Nov 17 2021)

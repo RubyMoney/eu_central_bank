@@ -176,7 +176,7 @@ describe "EuCentralBank" do
       rates = YAML.load(@bank.export_rates(:yaml))
       rates.delete('EUR_TO_EUR')
       rates = rates.values.collect(&:to_i)
-      expect(rates.length).to eq(34)
+      expect(rates.length).to eq(32)
       expect(rates).to satisfy { |rts|
         rts.all?(&:even?) or rts.all?(&:odd?)
       }

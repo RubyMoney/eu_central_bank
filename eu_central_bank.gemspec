@@ -15,8 +15,9 @@ Gem::Specification.new do |s|
   s.metadata['source_code_uri'] = "https://github.com/RubyMoney/eu_central_bank"
   s.metadata['bug_tracker_uri'] = "https://github.com/RubyMoney/eu_central_bank/issues"
 
-  s.required_ruby_version = ">= 3.0.0"
+  s.required_ruby_version = ">= 3.1.0"
 
+  s.add_dependency "bigdecimal"
   s.add_dependency "nokogiri", "~> 1.11"
   s.add_dependency "money", "~> 6.19"
 

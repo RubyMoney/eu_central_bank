@@ -41,7 +41,7 @@ class EuCentralBank < Money::Bank::VariableExchange
   def save_rates(cache, url=ECB_RATES_URL)
     raise InvalidCache unless cache
     File.open(cache, "w") do |file|
-      io = open_url(url)
+      io = URI.open(url)
       io.each_line { |line| file.puts line }
     end
   end
@@ -56,7 +56,7 @@ class EuCentralBank < Money::Bank::VariableExchange
   end
 
   def save_rates_to_s(url=ECB_RATES_URL)
-    open_url(url).read
+    URI.open(url).read
   end
 
   def exchange(cents, from_currency, to_currency, date=nil)
@@ -179,9 +179,9 @@ class EuCentralBank < Money::Bank::VariableExchange
   def doc(cache, url=ECB_RATES_URL)
     rates_source = !!cache ? cache : url
     begin
-      parse_rates(open_url(rates_source))
+      parse_rates(URI.open(rates_source))
     rescue Nokogiri::XML::XPath::SyntaxError
-      parse_rates(open_url(url))
+      parse_rates(URI.open(url))
     end
   end
 
@@ -236,13 +236,5 @@ class EuCentralBank < Money::Bank::VariableExchange
     decimal_money = BigDecimal(to_currency_money, DECIMAL_PRECISION) / BigDecimal(from_currency_money, DECIMAL_PRECISION)
     money = (decimal_money * from.cents * rate).round
     Money.new(money, to_currency)
-  end
-
-  def open_url(url)
-    if RUBY_VERSION >= '2.5.0'
-      URI.open(url)
-    else
-      open(url)
-    end
   end
 end

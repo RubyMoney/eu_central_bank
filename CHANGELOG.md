@@ -1,5 +1,8 @@
 # eu_central_bank changelog
 
+## Upcoming release (unreleased)
+
+* **Breaking change**: Require Ruby >= 3.1
 * Update YAML loading from compatibility with recent Psych versions.
 * Move Croatian Kuna (HRK) and Russian Ruble (RUB) to legacy currencies
 
@@ -9,7 +12,7 @@
 
 ## 1.6.1 (Mar 3 2021)
 
-* Allow a fallback when loading cached rate files to inhibit network fetch. 
+* Allow a fallback when loading cached rate files to inhibit network fetch.
 
 ## 1.5.0 (Dec 7 2019)
 

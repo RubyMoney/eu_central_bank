@@ -1,6 +1,7 @@
 # eu_central_bank
 
-[![Build Status](https://travis-ci.org/RubyMoney/eu_central_bank.svg?branch=master)](https://travis-ci.org/RubyMoney/eu_central_bank)
+[![Gem Version](https://badge.fury.io/rb/eu_central_bank.svg)](https://rubygems.org/gems/eu_central_bank)
+[![Ruby](https://github.com/RubyMoney/eu_central_bank/actions/workflows/ruby.yml/badge.svg)](https://github.com/RubyMoney/eu_central_bank/actions/workflows/ruby.yml)
 
 ## Introduction
 
@@ -12,15 +13,10 @@ This gem downloads the exchange rates from the European Central Bank. You can ca
 gem install eu_central_bank
 ```
 
-In case you're using older ruby (< 2.1) you need nokogiri < 1.6.8, so add this to your `Gemfile`:
-
-```
-gem 'nokogiri', '1.6.8'
-```
-
 ## Dependencies
 
 - nokogiri
+- bigdecimal
 - money
 
 ## Usage
@@ -72,9 +68,9 @@ eu_bank.exchange_with(Money.new(100, "CAD"), "USD") # Money.new(80, "USD")
 
 - Fork the project.
 - Make your feature addition or bug fix.
-- Add tests for it. This is important so I don't break it in a  future version unintentionally.
+- Add tests for it. This is important so I don't break it in a future version unintentionally.
 - Commit, do not mess with rakefile, version, or history. (if you want to have your own version, that is fine but bump version in a commit by itself I can ignore when I pull)
 
 ## Copyright
 
-Copyright (c) 2010-2016 RubyMoney. See LICENSE for details.
+Copyright (c) 2010-2025 RubyMoney. See LICENSE for details.

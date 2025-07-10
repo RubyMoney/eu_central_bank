@@ -2,6 +2,8 @@ require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
 describe "EuCentralBank" do
   before(:each) do
+    Money.rounding_mode = BigDecimal::ROUND_HALF_UP
+
     @bank = EuCentralBank.new
     @dir_path = File.dirname(__FILE__)
     @cache_path = File.expand_path(@dir_path + '/exchange_rates.xml')

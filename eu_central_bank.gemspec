@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
   s.add_dependency "nokogiri", "~> 1.11"
   s.add_dependency "money", "~> 6.19"
 
-  s.add_development_dependency "rspec", "~> 3.12.0"
+  s.add_development_dependency "rspec", "~> 3.13"
 
   s.files         = Dir.glob("lib/**/*") + %w(CHANGELOG.md LICENSE README.md)
   s.require_path = "lib"

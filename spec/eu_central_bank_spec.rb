@@ -1,6 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
-describe "EuCentralBank" do
+describe EuCentralBank do
   before(:each) do
     Money.rounding_mode = BigDecimal::ROUND_HALF_UP
 
@@ -19,6 +19,10 @@ describe "EuCentralBank" do
     [@tmp_cache_path, @tmp_history_cache_path, @tmp_full_history_cache_path].each do |file_name|
       File.delete file_name if File.exist? file_name
     end
+  end
+
+  it "has a version" do
+    expect(EuCentralBank::VERSION).to be_a(String)
   end
 
   it "should save the xml file from ecb given a file path" do

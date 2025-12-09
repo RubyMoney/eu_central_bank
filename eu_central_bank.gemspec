@@ -1,9 +1,14 @@
 #!/bin/env ruby
 # frozen_string_literal: true
 
+lib = File.expand_path("lib", __dir__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+
+require "eu_central_bank/version"
+
 Gem::Specification.new do |s|
   s.name         = "eu_central_bank"
-  s.version      = "2.0.0"
+  s.version      = EuCentralBank::VERSION
   s.platform     = Gem::Platform::RUBY
   s.authors      = ["Shane Emmons"]
   s.email        = ["shane@emmons.io"]

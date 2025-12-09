@@ -1,8 +1,9 @@
 #!/bin/env ruby
-# encoding: utf-8
+# frozen_string_literal: true
+
 Gem::Specification.new do |s|
   s.name         = "eu_central_bank"
-  s.version      = "1.7.0"
+  s.version      = "2.0.0"
   s.platform     = Gem::Platform::RUBY
   s.authors      = ["Shane Emmons"]
   s.email        = ["shane@emmons.io"]
@@ -19,7 +20,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency "bigdecimal"
   s.add_dependency "nokogiri", "~> 1.11"
-  s.add_dependency "money", "~> 6.19"
+  s.add_dependency "money", "~> 7.0"
 
   s.add_development_dependency "rspec", "~> 3.13"
 

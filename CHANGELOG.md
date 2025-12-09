@@ -2,7 +2,11 @@
 
 ## Upcoming release (unreleased)
 
+## 2.0.0 (Dec 9 2025)
+
 * **Breaking change**: Require Ruby >= 3.1
+* **Breaking change**: Update Money dependency to 7.0. Make sure to read [the upgrade
+  guide](https://github.com/RubyMoney/money/blob/main/UPGRADING-7.0.md).
 * Update YAML loading from compatibility with recent Psych versions.
 * Move Croatian Kuna (HRK) and Russian Ruble (RUB) to legacy currencies
 

@@ -9,6 +9,7 @@
   guide](https://github.com/RubyMoney/money/blob/main/UPGRADING-7.0.md).
 * Update YAML loading from compatibility with recent Psych versions.
 * Move Croatian Kuna (HRK) and Russian Ruble (RUB) to legacy currencies
+* Add `EuCentralBank::VERSION`.
 
 ## 1.7.0 (Nov 17 2021)
 

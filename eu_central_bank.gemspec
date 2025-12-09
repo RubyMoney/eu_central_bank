@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
 
   # Please also update `eu_central_bank/version.rb`.
   #
-  # We cannot require this file here because of the `money` dependency when
+  # We cannot use this constant here because of the `money` dependency when
   # inheriting from `Money::Bank::VariableExchange`.
   s.version      = "2.0.0"
 

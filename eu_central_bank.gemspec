@@ -1,14 +1,15 @@
 #!/bin/env ruby
 # frozen_string_literal: true
 
-lib = File.expand_path("lib", __dir__)
-$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-
-require "eu_central_bank/version"
-
 Gem::Specification.new do |s|
   s.name         = "eu_central_bank"
-  s.version      = EuCentralBank::VERSION
+
+  # Please also update `eu_central_bank/version.rb`.
+  #
+  # We cannot require this file here because of the `money` dependency when
+  # inheriting from `Money::Bank::VariableExchange`.
+  s.version      = "2.0.0"
+
   s.platform     = Gem::Platform::RUBY
   s.authors      = ["Shane Emmons"]
   s.email        = ["shane@emmons.io"]

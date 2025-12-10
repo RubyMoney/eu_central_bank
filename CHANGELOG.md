@@ -2,7 +2,7 @@
 
 ## Upcoming release (unreleased)
 
-## 2.0.0 (Dec 9 2025)
+## 2.0.0 (Dec 10 2025)
 
 * **Breaking change**: Require Ruby >= 3.1
 * **Breaking change**: Update Money dependency to 7.0. Make sure to read [the upgrade

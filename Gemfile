@@ -1,7 +1,9 @@
-source 'https://rubygems.org'
+source "https://rubygems.org"
 
 gemspec
 
-group :test do
-  gem 'rake'
-end
+# Tasks
+gem "rake"
+
+# Specs
+gem "rspec", "~> 3.13"

@@ -3,6 +3,7 @@ require 'nokogiri'
 require 'money'
 require 'money/rates_store/store_with_historical_data_support'
 require 'eu_central_bank/rates_document'
+require 'eu_central_bank/version'
 
 class InvalidCache < StandardError ; end
 

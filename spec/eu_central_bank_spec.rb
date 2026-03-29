@@ -40,7 +40,7 @@ describe EuCentralBank do
   end
 
   it "should update itself with exchange rates from ecb website" do
-    allow(OpenURI::OpenRead).to receive(:open).with(EuCentralBank::ECB_RATES_URL) {@cache_path}
+    allow(OpenURI).to receive(:open_uri).with(URI(EuCentralBank::ECB_RATES_URL)).and_return(File.open(@cache_path))
     @bank.update_rates
     EuCentralBank::CURRENCIES.each do |currency|
       expect(@bank.get_rate("EUR", currency)).to be > 0
@@ -49,7 +49,7 @@ describe EuCentralBank do
 
   it "should update itself with exchange rates from ecb website when the data get from cache is illegal" do
     illegal_cache_path = File.expand_path(@dir_path + '/illegal_exchange_rates.xml')
-    allow(OpenURI::OpenRead).to receive(:open).with(EuCentralBank::ECB_RATES_URL) {@cache_path}
+    allow(OpenURI).to receive(:open_uri).with(URI(EuCentralBank::ECB_RATES_URL)).and_return(File.open(@cache_path))
     @bank.update_rates(illegal_cache_path)
     EuCentralBank::CURRENCIES.each do |currency|
       expect(@bank.get_rate("EUR", currency)).to be > 0
@@ -64,7 +64,7 @@ describe EuCentralBank do
   end
 
   it "should export to a string a valid cache that can be reread" do
-    allow(OpenURI::OpenRead).to receive(:open).with(EuCentralBank::ECB_RATES_URL) {@cache_path}
+    allow(OpenURI).to receive(:open_uri).with(URI(EuCentralBank::ECB_RATES_URL)).and_return(File.open(@cache_path))
     s = @bank.save_rates_to_s
     @bank.update_rates_from_s(s)
     EuCentralBank::CURRENCIES.each do |currency|
